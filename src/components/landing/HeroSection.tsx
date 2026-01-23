@@ -1,7 +1,6 @@
 import { NavigationProps } from '../../types/landing.types';
 import { CONTENT } from '../../constants/landingContent';
 import { CTAButton } from './CTAButton';
-import { GeometricShape } from './GeometricShape';
 
 /**
  * HeroSection Component
@@ -66,20 +65,32 @@ export function HeroSection({ onNavigate }: NavigationProps) {
           
           {/* Right Column: Visual Comparison */}
           <div className="grid grid-cols-2 gap-8">
-            {/* Before: Chaotic Canva workflow */}
+            {/* Before: Confused woman with Canva */}
             <div>
               <p className="text-sm text-gray-500 mb-2 text-center font-medium">
                 Before (Canva)
               </p>
-              <GeometricShape variant="hero-chaotic" />
+              <div className="rounded-lg overflow-hidden shadow-lg border border-gray-200">
+                <img 
+                  src="/backgrounds/confused-woman.png" 
+                  alt="Confused woman struggling with design tools like Canva"
+                  className="w-full h-auto object-cover"
+                />
+              </div>
             </div>
             
-            {/* After: Organized LoomGraph output */}
+            {/* After: Happy woman with LoomGraph */}
             <div>
               <p className="text-sm text-gray-500 mb-2 text-center font-medium">
                 After (LoomGraph)
               </p>
-              <GeometricShape variant="hero-organized" />
+              <div className="rounded-lg overflow-hidden shadow-lg border border-gray-200">
+                <img 
+                  src="/backgrounds/happy-woman.png" 
+                  alt="Happy woman easily creating banners with LoomGraph"
+                  className="w-full h-auto object-cover"
+                />
+              </div>
             </div>
           </div>
         </div>
