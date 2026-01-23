@@ -29,48 +29,71 @@ const ProfessionalTemplate: React.FC<ProfessionalTemplateProps> = ({
       className="relative w-[1200px] h-[627px] overflow-hidden"
       style={{ fontFamily: 'Inter, sans-serif', backgroundColor: accentColor }}
     >
-      {/* Background with gradient */}
-      <div className="absolute inset-0 bg-gradient-to-br from-black/10 to-transparent" />
+      {/* Background gradient overlay */}
+      <div 
+        className="absolute inset-0" 
+        style={{
+          background: `linear-gradient(135deg, ${accentColor} 0%, ${accentColor}dd 100%)`,
+        }}
+      />
+
+      {/* Diagonal accent stripes - top right */}
+      <div className="absolute top-0 right-0 w-96 h-96 overflow-hidden opacity-20">
+        <div className="absolute top-12 -right-12 w-80 h-2 bg-white transform rotate-45" />
+        <div className="absolute top-24 -right-12 w-96 h-3 bg-white transform rotate-45" />
+        <div className="absolute top-40 -right-12 w-72 h-2 bg-white transform rotate-45" />
+      </div>
 
       {/* Content Container - Split Layout */}
       <div className="relative h-full flex">
-        {/* Left Side - Content (60%) */}
-        <div className="w-[60%] flex flex-col justify-center px-16 py-12">
+        {/* Left Side - Content (58%) */}
+        <div className="w-[58%] flex flex-col justify-center px-16 py-16">
           {/* Title */}
           <h1
-            className="font-bold leading-tight mb-6 text-white"
+            className="font-black leading-tight mb-8 text-white"
             style={{
-              fontSize: title.length > 50 ? '52px' : title.length > 30 ? '60px' : '72px',
+              fontSize: title.length > 50 ? '56px' : title.length > 30 ? '68px' : '76px',
+              fontWeight: 900,
+              lineHeight: 1.1,
+              letterSpacing: '-0.02em',
             }}
           >
             {title || 'Your Webinar Title Here'}
           </h1>
 
           {/* Speaker Info */}
-          <div className="mb-6">
-            <p className="text-3xl font-semibold text-white mb-2">
+          <div className="mb-8">
+            <p className="text-4xl font-bold text-white mb-3" style={{ letterSpacing: '-0.01em' }}>
               {speaker.name || 'Speaker Name'}
             </p>
-            <p className="text-xl text-white/90">
+            <p className="text-xl text-white" style={{ opacity: 0.95 }}>
               {speaker.title || 'Title & Company'}
             </p>
           </div>
 
           {/* Company Logo */}
           {speaker.companyLogoUrl && (
-            <div className="mb-6">
+            <div className="mb-8">
               <img
                 src={speaker.companyLogoUrl}
                 alt="Company logo"
-                className="h-12 object-contain"
-                style={{ maxWidth: '200px' }}
+                className="h-16 object-contain"
+                style={{ maxWidth: '220px', filter: 'brightness(0) invert(1)' }}
               />
             </div>
           )}
 
+          {/* CTA */}
+          <div className="mb-6">
+            <div className="inline-block">
+              <p className="text-2xl font-bold text-white mb-2">REGISTER NOW</p>
+              <div className="h-1 bg-white" style={{ width: '180px' }} />
+            </div>
+          </div>
+
           {/* Date & Time */}
           {(date || time) && (
-            <div className="text-white/90 text-lg">
+            <div className="text-white text-lg" style={{ opacity: 0.9 }}>
               {date && formatDate(date)}
               {date && time && ' • '}
               {time && formatTime(time, showTimezone ? timezone : undefined)}
@@ -78,28 +101,48 @@ const ProfessionalTemplate: React.FC<ProfessionalTemplateProps> = ({
           )}
         </div>
 
-        {/* Right Side - Headshot (40%) */}
-        <div className="w-[40%] flex items-center justify-center p-12">
+        {/* Right Side - Headshot (42%) */}
+        <div className="w-[42%] flex items-center justify-center p-12">
           {speaker.headshotUrl ? (
-            <div className="w-80 h-80 rounded-full overflow-hidden border-8 border-white shadow-2xl">
+            <div 
+              className="rounded-full overflow-hidden bg-white shadow-2xl"
+              style={{ 
+                width: '380px', 
+                height: '380px',
+                border: '12px solid white',
+                boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+              }}
+            >
               <img
                 src={speaker.headshotUrl}
                 alt={speaker.name}
                 className="w-full h-full object-cover"
+                crossOrigin="anonymous"
               />
             </div>
           ) : (
-            <div className="w-80 h-80 rounded-full flex items-center justify-center text-white text-8xl font-bold border-8 border-white bg-white/20">
+            <div 
+              className="rounded-full flex items-center justify-center text-white font-black bg-white/20"
+              style={{ 
+                width: '380px', 
+                height: '380px',
+                border: '12px solid white',
+                fontSize: '120px',
+              }}
+            >
               {speaker.name ? speaker.name.charAt(0).toUpperCase() : '?'}
             </div>
           )}
         </div>
       </div>
 
-      {/* Decorative Element - Diagonal Accent */}
-      <div
-        className="absolute bottom-0 left-0 w-64 h-2 opacity-50"
-        style={{ backgroundColor: 'white' }}
+      {/* Decorative curved element - bottom left */}
+      <div 
+        className="absolute bottom-0 left-0 w-64 h-32 opacity-10"
+        style={{
+          background: 'white',
+          borderTopRightRadius: '100%',
+        }}
       />
     </div>
   );
