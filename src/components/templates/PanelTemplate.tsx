@@ -1,7 +1,6 @@
 import React from 'react';
 import { Speaker } from '../../types/banner.types';
 import { formatDate, formatTime } from '../../utils/exportHelpers';
-import { Calendar, Clock } from 'lucide-react';
 
 interface PanelTemplateProps {
   title: string;
@@ -102,7 +101,7 @@ const PanelTemplate: React.FC<PanelTemplateProps> = ({
           {/* Time Badge */}
           {time && (
             <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-5 py-2 rounded-full mb-6">
-              <Clock className="w-5 h-5 text-white" strokeWidth={2.5} />
+              <span className="text-white text-xl">🕐</span>
               <span className="text-white font-semibold text-base">
                 {formatTime(time, showTimezone ? timezone : undefined)}
               </span>
@@ -136,7 +135,7 @@ const PanelTemplate: React.FC<PanelTemplateProps> = ({
           {/* Date with Icon */}
           {date && (
             <div className="flex items-center gap-3 text-white text-lg">
-              <Calendar className="w-6 h-6" strokeWidth={2.5} />
+              <span className="text-2xl">📅</span>
               <span className="font-medium">{formatDate(date)}</span>
             </div>
           )}

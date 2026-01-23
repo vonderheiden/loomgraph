@@ -1,7 +1,6 @@
 import React from 'react';
 import { Speaker } from '../../types/banner.types';
 import { formatDate, formatTime } from '../../utils/exportHelpers';
-import { Calendar, Clock } from 'lucide-react';
 
 interface DuoTemplateProps {
   title: string;
@@ -164,18 +163,18 @@ const DuoTemplate: React.FC<DuoTemplateProps> = ({
           </div>
         </div>
 
-        {/* Date & Time Section with Icons */}
+        {/* Date & Time Section with Unicode Icons */}
         {(date || time) && (
           <div className="flex justify-center items-center gap-8 text-white text-xl">
             {date && (
               <div className="flex items-center gap-3">
-                <Calendar className="w-6 h-6" strokeWidth={2.5} />
+                <span className="text-2xl">📅</span>
                 <span className="font-medium">{formatDate(date)}</span>
               </div>
             )}
             {time && (
               <div className="flex items-center gap-3">
-                <Clock className="w-6 h-6" strokeWidth={2.5} />
+                <span className="text-2xl">🕐</span>
                 <span className="font-medium">{formatTime(time, showTimezone ? timezone : undefined)}</span>
               </div>
             )}

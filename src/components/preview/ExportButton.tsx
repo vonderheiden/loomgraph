@@ -22,26 +22,37 @@ const ExportButton: React.FC = () => {
         throw new Error('Banner template not found');
       }
 
-      // Wait a bit for images to load
-      await new Promise(resolve => setTimeout(resolve, 500));
+      // Wait longer for images and fonts to load
+      await new Promise(resolve => setTimeout(resolve, 1000));
 
-      // Convert to PNG at 2x resolution for high quality
+      // Convert to PNG with more robust settings
       const dataUrl = await toPng(element, {
         quality: 1.0,
-        pixelRatio: 2, // 2x for retina displays
+        pixelRatio: 2,
         width: 1200,
         height: 627,
-        cacheBust: true, // Prevent caching issues
-        skipFonts: false, // Include fonts
+        cacheBust: true,
+        skipFonts: false,
+        includeQueryParams: true,
+        // Filter out problematic elements
+        filter: (_node) => {
+          // Allow all nodes - don't filter anything
+          return true;
+        },
         style: {
-          // Ensure proper rendering
           transform: 'scale(1)',
+          transformOrigin: 'top left',
         },
       });
 
       // Convert data URL to blob
       const response = await fetch(dataUrl);
       const blob = await response.blob();
+
+      // Verify blob is valid
+      if (blob.size === 0) {
+        throw new Error('Generated image is empty');
+      }
 
       // Generate filename and download
       const filename = generateFileName(state.title);
@@ -54,7 +65,18 @@ const ExportButton: React.FC = () => {
       console.error('Export failed:', err);
       const errorMessage = err instanceof Error ? err.message : 'Unknown error';
       setError(errorMessage);
-      alert(`Failed to export banner: ${errorMessage}\n\nPlease ensure all images are loaded and try again.`);
+      
+      // More helpful error message
+      let userMessage = 'Failed to export banner.\n\n';
+      if (errorMessage.includes('tainted')) {
+        userMessage += 'Image CORS error. Try using different images or wait for them to fully load.';
+      } else if (errorMessage.includes('empty')) {
+        userMessage += 'Generated image is empty. Please ensure all content is visible.';
+      } else {
+        userMessage += `Error: ${errorMessage}\n\nTry:\n1. Wait a few seconds for images to load\n2. Scroll to make sure the preview is visible\n3. Try again`;
+      }
+      
+      alert(userMessage);
     } finally {
       setIsExporting(false);
     }
@@ -97,7 +119,12 @@ const ExportButton: React.FC = () => {
       </button>
       {error && (
         <p className="text-xs text-red-600 text-center">
-          Export failed. Make sure all images are loaded.
+          Export failed. Check console for details.
+        </p>
+      )}
+      {isExporting && (
+        <p className="text-xs text-gray-600 text-center">
+          Please wait while we generate your banner...
         </p>
       )}
     </div>
