@@ -22,10 +22,30 @@ const ExportButton: React.FC = () => {
         throw new Error('Banner template not found');
       }
 
-      // Wait longer for images and fonts to load
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Ensure element is visible and in viewport
+      element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      
+      // Wait for images to load - check all img elements
+      const images = element.querySelectorAll('img');
+      await Promise.all(
+        Array.from(images).map(img => {
+          if (img.complete) return Promise.resolve();
+          return new Promise<void>((resolve) => {
+            img.onload = () => resolve();
+            img.onerror = () => {
+              console.warn('Image failed to load:', img.src);
+              resolve(); // Continue even if image fails
+            };
+            // Timeout after 5 seconds
+            setTimeout(() => resolve(), 5000);
+          });
+        })
+      );
 
-      // Convert to PNG with more robust settings
+      // Additional wait for fonts and rendering
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      // Convert to PNG with robust settings
       const dataUrl = await toPng(element, {
         quality: 1.0,
         pixelRatio: 2,
@@ -33,17 +53,16 @@ const ExportButton: React.FC = () => {
         height: 627,
         cacheBust: true,
         skipFonts: false,
-        includeQueryParams: true,
-        // Filter out problematic elements
-        filter: () => {
-          // Allow all nodes - don't filter anything
-          return true;
-        },
         style: {
           transform: 'scale(1)',
           transformOrigin: 'top left',
         },
       });
+
+      // Verify data URL is valid
+      if (!dataUrl || dataUrl === 'data:,') {
+        throw new Error('Generated image is empty');
+      }
 
       // Convert data URL to blob
       const response = await fetch(dataUrl);
@@ -51,7 +70,7 @@ const ExportButton: React.FC = () => {
 
       // Verify blob is valid
       if (blob.size === 0) {
-        throw new Error('Generated image is empty');
+        throw new Error('Generated image has no data');
       }
 
       // Generate filename and download
@@ -68,9 +87,9 @@ const ExportButton: React.FC = () => {
       
       // More helpful error message
       let userMessage = 'Failed to export banner.\n\n';
-      if (errorMessage.includes('tainted')) {
+      if (errorMessage.includes('tainted') || errorMessage.includes('CORS')) {
         userMessage += 'Image CORS error. Try using different images or wait for them to fully load.';
-      } else if (errorMessage.includes('empty')) {
+      } else if (errorMessage.includes('empty') || errorMessage.includes('no data')) {
         userMessage += 'Generated image is empty. Please ensure all content is visible.';
       } else {
         userMessage += `Error: ${errorMessage}\n\nTry:\n1. Wait a few seconds for images to load\n2. Scroll to make sure the preview is visible\n3. Try again`;

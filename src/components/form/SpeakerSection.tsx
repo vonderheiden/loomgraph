@@ -129,58 +129,63 @@ const SpeakerSection: React.FC<SpeakerSectionProps> = ({
           </span>
         </div>
 
-        {/* Headshot Upload */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Speaker Headshot *
-          </label>
+        {/* Headshot and Company Logo - Side by Side */}
+        <div className="grid grid-cols-2 gap-4">
+          {/* Headshot Upload */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Speaker Headshot *
+            </label>
 
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/png,image/jpeg,image/jpg"
-            onChange={handleHeadshotSelect}
-            className="hidden"
-            aria-label={`Upload headshot for speaker ${speakerIndex + 1}`}
-          />
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/png,image/jpeg,image/jpg"
+              onChange={handleHeadshotSelect}
+              className="hidden"
+              aria-label={`Upload headshot for speaker ${speakerIndex + 1}`}
+            />
 
-          {!speaker.headshotUrl ? (
-            <button
-              type="button"
-              onClick={handleHeadshotClick}
-              className="w-full h-32 border-2 border-dashed border-bento-border rounded-lg hover:border-action-primary hover:bg-gray-50 transition-colors flex flex-col items-center justify-center gap-2 text-gray-600"
-            >
-              <Upload className="w-8 h-8" />
-              <span className="text-sm">Upload Headshot</span>
-              <span className="text-xs text-gray-500">PNG or JPG, max 5MB</span>
-            </button>
-          ) : (
-            <div className="relative inline-block">
-              <div className="w-32 h-32 border border-bento-border rounded-full overflow-hidden bg-gray-100">
-                <img
-                  src={speaker.headshotUrl}
-                  alt={`${speaker.name || 'Speaker'} headshot`}
-                  className="w-full h-full object-cover"
-                />
-              </div>
+            {!speaker.headshotUrl ? (
               <button
                 type="button"
-                onClick={handleHeadshotRemove}
-                className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors shadow-md"
-                aria-label="Remove headshot"
+                onClick={handleHeadshotClick}
+                className="w-full h-32 border-2 border-dashed border-bento-border rounded-lg hover:border-action-primary hover:bg-gray-50 transition-colors flex flex-col items-center justify-center gap-2 text-gray-600"
               >
-                <X className="w-4 h-4" />
+                <Upload className="w-8 h-8" />
+                <span className="text-sm">Upload Headshot</span>
+                <span className="text-xs text-gray-500">PNG or JPG, max 5MB</span>
               </button>
-            </div>
-          )}
-        </div>
+            ) : (
+              <div className="relative inline-block">
+                <div className="w-32 h-32 border border-bento-border rounded-full overflow-hidden bg-gray-100">
+                  <img
+                    src={speaker.headshotUrl}
+                    alt={`${speaker.name || 'Speaker'} headshot`}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <button
+                  type="button"
+                  onClick={handleHeadshotRemove}
+                  className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors shadow-md"
+                  aria-label="Remove headshot"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            )}
+          </div>
 
-        {/* Company Logo Upload */}
-        <CompanyLogoUploader
-          logoUrl={speaker.companyLogoUrl}
-          onLogoChange={handleLogoChange}
-          speakerIndex={speakerIndex}
-        />
+          {/* Company Logo Upload */}
+          <div>
+            <CompanyLogoUploader
+              logoUrl={speaker.companyLogoUrl}
+              onLogoChange={handleLogoChange}
+              speakerIndex={speakerIndex}
+            />
+          </div>
+        </div>
       </div>
       )}
     </div>
