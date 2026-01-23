@@ -11,7 +11,7 @@ const FormPanel: React.FC = () => {
   const { state, updateSpeaker } = useBannerState();
 
   return (
-    <div className="w-full lg:w-1/2 bg-white border-r border-gray-200">
+    <div className="w-full lg:w-2/5 bg-white border-r border-gray-200">
       {/* Sticky header */}
       <div className="sticky top-0 z-10 bg-white border-b border-gray-200 px-6 py-4">
         <h1 className="text-2xl font-bold text-gray-900">Create Your Webinar Banner</h1>

@@ -1,5 +1,5 @@
-import React, { useRef } from 'react';
-import { Upload, X, User } from 'lucide-react';
+import React, { useRef, useState } from 'react';
+import { Upload, X, User, ChevronDown, ChevronUp } from 'lucide-react';
 import { Speaker } from '../../types/banner.types';
 import { validateImageFile } from '../../utils/fileValidation';
 import CompanyLogoUploader from './CompanyLogoUploader';
@@ -16,6 +16,7 @@ const SpeakerSection: React.FC<SpeakerSectionProps> = ({
   onUpdate,
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isExpanded, setIsExpanded] = useState(speakerIndex === 0); // First speaker expanded by default
 
   const nameMaxLength = 50;
   const titleMaxLength = 50;
@@ -55,13 +56,32 @@ const SpeakerSection: React.FC<SpeakerSectionProps> = ({
   };
 
   return (
-    <div className="bg-bento-card border border-bento-border rounded-bento shadow-soft p-6">
-      <div className="flex items-center gap-2 mb-4">
-        <User className="w-5 h-5 text-gray-700" />
-        <h3 className="text-lg font-semibold">Speaker {speakerIndex + 1}</h3>
-      </div>
+    <div className="bg-bento-card border border-bento-border rounded-bento shadow-soft overflow-hidden">
+      {/* Collapsible Header */}
+      <button
+        type="button"
+        onClick={() => setIsExpanded(!isExpanded)}
+        className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors"
+      >
+        <div className="flex items-center gap-3">
+          <User className="w-5 h-5 text-gray-700" />
+          <div className="text-left">
+            <h3 className="text-lg font-semibold">Speaker {speakerIndex + 1}</h3>
+            {!isExpanded && speaker.name && (
+              <p className="text-sm text-gray-600">{speaker.name}</p>
+            )}
+          </div>
+        </div>
+        {isExpanded ? (
+          <ChevronUp className="w-5 h-5 text-gray-500" />
+        ) : (
+          <ChevronDown className="w-5 h-5 text-gray-500" />
+        )}
+      </button>
 
-      <div className="space-y-4">
+      {/* Collapsible Content */}
+      {isExpanded && (
+        <div className="px-6 pb-6 space-y-4 border-t border-gray-100">
         {/* Speaker Name */}
         <div>
           <label
@@ -159,6 +179,7 @@ const SpeakerSection: React.FC<SpeakerSectionProps> = ({
           speakerIndex={speakerIndex}
         />
       </div>
+      )}
     </div>
   );
 };
