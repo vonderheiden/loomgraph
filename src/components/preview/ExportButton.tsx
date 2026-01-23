@@ -35,7 +35,7 @@ const ExportButton: React.FC = () => {
         skipFonts: false,
         includeQueryParams: true,
         // Filter out problematic elements
-        filter: (_node) => {
+        filter: () => {
           // Allow all nodes - don't filter anything
           return true;
         },

@@ -95,7 +95,7 @@ export function sanitizeUrl(url: string): string {
   if (!url) return '';
   
   // Remove whitespace
-  let sanitized = url.trim();
+  const sanitized = url.trim();
   
   // Check for dangerous protocols
   const dangerousProtocols = /^(javascript|data|vbscript|file):/i;
