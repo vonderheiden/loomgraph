@@ -66,7 +66,7 @@ const ProfessionalTemplate: React.FC<ProfessionalTemplateProps> = ({
 
         {/* Content */}
         <div className="relative h-full flex flex-col justify-between px-16 py-12">
-          {/* Top Section - Webinar Tag & Title */}
+          {/* Top Section - Webinar Tag, Title, Date/Time & Register */}
           <div>
             {/* Webinar Tag */}
             <div
@@ -81,7 +81,7 @@ const ProfessionalTemplate: React.FC<ProfessionalTemplateProps> = ({
 
             {/* Title */}
             <h1
-              className="font-bold leading-tight text-white mb-8"
+              className="font-bold leading-tight text-white mb-6"
               style={{
                 fontSize: title.length > 80 ? '36px' : title.length > 50 ? '44px' : '52px',
                 fontWeight: 700,
@@ -92,86 +92,88 @@ const ProfessionalTemplate: React.FC<ProfessionalTemplateProps> = ({
             >
               {title || 'Your Webinar Title Here'}
             </h1>
-          </div>
 
-          {/* Bottom Section - Date/Time, Register Button, Speaker */}
-          <div className="flex items-end justify-between">
-            {/* Left Side - Date/Time & Speaker */}
-            <div className="flex items-end gap-12">
+            {/* Date/Time & Register Button */}
+            <div className="flex items-center gap-8">
               {/* Date & Time */}
-              <div className="space-y-1">
-                {date && (
-                  <div
-                    className="font-bold text-2xl"
-                    style={{ color: accentColor }}
-                  >
-                    {formatDate(date)}
-                  </div>
-                )}
-                {time && (
-                  <div
-                    className="font-bold text-2xl"
-                    style={{ color: accentColor }}
-                  >
-                    {formatTime(time, showTimezone ? timezone : undefined)}
-                  </div>
-                )}
-              </div>
-
-              {/* Speaker Info */}
-              <div className="flex items-center gap-4">
-                {/* Headshot */}
-                {speaker.headshotUrl ? (
-                  <div
-                    className="rounded-full overflow-hidden bg-white shadow-lg flex-shrink-0"
-                    style={{
-                      width: '80px',
-                      height: '80px',
-                      border: '3px solid white',
-                    }}
-                  >
-                    <img
-                      src={speaker.headshotUrl}
-                      alt={speaker.name}
-                      className="w-full h-full object-cover"
-                      crossOrigin="anonymous"
-                    />
-                  </div>
-                ) : (
-                  <div
-                    className="rounded-full flex items-center justify-center text-white font-black bg-white/20 flex-shrink-0"
-                    style={{
-                      width: '80px',
-                      height: '80px',
-                      border: '3px solid white',
-                      fontSize: '32px',
-                    }}
-                  >
-                    {speaker.name ? speaker.name.charAt(0).toUpperCase() : '?'}
-                  </div>
-                )}
-
-                {/* Name & Title */}
-                <div>
-                  <p className="text-xl font-bold text-white leading-tight mb-1">
-                    {speaker.name || 'Speaker Name'}
-                  </p>
-                  <p className="text-sm text-white leading-tight">
-                    {speaker.title || 'Title & Company'}
-                  </p>
+              {(date || time) && (
+                <div className="flex items-center gap-4">
+                  {date && (
+                    <div
+                      className="font-bold text-xl"
+                      style={{ color: accentColor }}
+                    >
+                      {formatDate(date)}
+                    </div>
+                  )}
+                  {date && time && (
+                    <div className="text-white text-xl">|</div>
+                  )}
+                  {time && (
+                    <div
+                      className="font-bold text-xl"
+                      style={{ color: accentColor }}
+                    >
+                      {formatTime(time, showTimezone ? timezone : undefined)}
+                    </div>
+                  )}
                 </div>
+              )}
+
+              {/* Register Button */}
+              <div
+                className="px-8 py-3 rounded-lg font-bold text-lg"
+                style={{
+                  backgroundColor: accentColor,
+                  color: '#000000',
+                }}
+              >
+                Register
               </div>
             </div>
+          </div>
 
-            {/* Right Side - Register Button */}
-            <div
-              className="px-10 py-4 rounded-lg font-bold text-xl"
-              style={{
-                backgroundColor: accentColor,
-                color: '#000000',
-              }}
-            >
-              Register
+          {/* Bottom Section - Speaker */}
+          <div className="flex items-center gap-4">
+            {/* Headshot */}
+            {speaker.headshotUrl ? (
+              <div
+                className="rounded-full overflow-hidden bg-white shadow-lg flex-shrink-0"
+                style={{
+                  width: '80px',
+                  height: '80px',
+                  border: '3px solid white',
+                }}
+              >
+                <img
+                  src={speaker.headshotUrl}
+                  alt={speaker.name}
+                  className="w-full h-full object-cover"
+                  crossOrigin="anonymous"
+                />
+              </div>
+            ) : (
+              <div
+                className="rounded-full flex items-center justify-center text-white font-black bg-white/20 flex-shrink-0"
+                style={{
+                  width: '80px',
+                  height: '80px',
+                  border: '3px solid white',
+                  fontSize: '32px',
+                }}
+              >
+                {speaker.name ? speaker.name.charAt(0).toUpperCase() : '?'}
+              </div>
+            )}
+
+            {/* Name & Title */}
+            <div>
+              <p className="text-xl font-bold text-white leading-tight mb-1">
+                {speaker.name || 'Speaker Name'}
+              </p>
+              <p className="text-sm text-white leading-tight">
+                {speaker.title || 'Title & Company'}
+              </p>
             </div>
           </div>
         </div>

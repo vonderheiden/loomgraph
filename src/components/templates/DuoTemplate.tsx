@@ -111,7 +111,7 @@ const DuoTemplate: React.FC<DuoTemplateProps> = ({
 
         {/* Content */}
         <div className="relative h-full flex flex-col justify-between px-16 py-12">
-          {/* Top - Webinar Tag & Title */}
+          {/* Top - Webinar Tag, Title, Date/Time & Register */}
           <div>
             {/* Webinar Tag */}
             <div
@@ -126,7 +126,7 @@ const DuoTemplate: React.FC<DuoTemplateProps> = ({
 
             {/* Title */}
             <h1
-              className="font-bold leading-tight text-white mb-8"
+              className="font-bold leading-tight text-white mb-6"
               style={{
                 fontSize: title.length > 80 ? '36px' : title.length > 50 ? '44px' : '52px',
                 fontWeight: 700,
@@ -137,49 +137,51 @@ const DuoTemplate: React.FC<DuoTemplateProps> = ({
             >
               {title || 'Your Webinar Title Here'}
             </h1>
+
+            {/* Date/Time & Register Button */}
+            <div className="flex items-center gap-8">
+              {/* Date & Time */}
+              {(date || time) && (
+                <div className="flex items-center gap-4">
+                  {date && (
+                    <div
+                      className="font-bold text-xl"
+                      style={{ color: accentColor }}
+                    >
+                      {formatDate(date)}
+                    </div>
+                  )}
+                  {date && time && (
+                    <div className="text-white text-xl">|</div>
+                  )}
+                  {time && (
+                    <div
+                      className="font-bold text-xl"
+                      style={{ color: accentColor }}
+                    >
+                      {formatTime(time, showTimezone ? timezone : undefined)}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Register Button */}
+              <div
+                className="px-8 py-3 rounded-lg font-bold text-lg"
+                style={{
+                  backgroundColor: accentColor,
+                  color: '#000000',
+                }}
+              >
+                Register
+              </div>
+            </div>
           </div>
 
-          {/* Bottom - Date/Time, Register Button, Speakers */}
-          <div className="flex items-end justify-between">
-            {/* Left Side - Date/Time & Speakers */}
-            <div className="flex items-end gap-12">
-              {/* Date & Time */}
-              <div className="space-y-1">
-                {date && (
-                  <div
-                    className="font-bold text-2xl"
-                    style={{ color: accentColor }}
-                  >
-                    {formatDate(date)}
-                  </div>
-                )}
-                {time && (
-                  <div
-                    className="font-bold text-2xl"
-                    style={{ color: accentColor }}
-                  >
-                    {formatTime(time, showTimezone ? timezone : undefined)}
-                  </div>
-                )}
-              </div>
-
-              {/* Speakers */}
-              <div className="flex items-center gap-8">
-                {renderSpeaker(speaker1, 0)}
-                {renderSpeaker(speaker2, 1)}
-              </div>
-            </div>
-
-            {/* Right Side - Register Button */}
-            <div
-              className="px-10 py-4 rounded-lg font-bold text-xl"
-              style={{
-                backgroundColor: accentColor,
-                color: '#000000',
-              }}
-            >
-              Register
-            </div>
+          {/* Bottom - Speakers */}
+          <div className="flex items-center gap-8">
+            {renderSpeaker(speaker1, 0)}
+            {renderSpeaker(speaker2, 1)}
           </div>
         </div>
       </div>
