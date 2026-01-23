@@ -1,10 +1,19 @@
-// Simplified state model for MVP (single speaker, flat structure)
+// Speaker interface for multi-speaker support
+export interface Speaker {
+  name: string;
+  title: string;
+  headshotUrl: string | null;
+  headshotFile: File | null;
+  companyLogoUrl: string | null;
+  companyLogoFile: File | null;
+}
+
+// State model supporting 1-3 speakers
 export interface BannerState {
   // Webinar Details
   title: string;
-  speakerName: string;
-  speakerRole: string;
-  headshotUrl: string | null;
+  speakerCount: 1 | 2 | 3;
+  speakers: Speaker[];
   
   // Schedule
   date: string; // ISO date string
@@ -13,11 +22,8 @@ export interface BannerState {
   showTimezone: boolean;
   
   // Visual Customization
-  template: 'minimalist' | 'bold-founder' | 'duo';
+  template: 'professional' | 'duo' | 'panel';
   accentColor: string;
-  
-  // Transient state
-  headshotFile: File | null;
 }
 
 // Template configuration
@@ -29,7 +35,7 @@ export interface TemplateConfig {
 
 // Form validation types
 export interface ValidationError {
-  field: keyof BannerState;
+  field: keyof BannerState | 'speakers';
   message: string;
 }
 

@@ -13,18 +13,28 @@ export function validateBannerState(state: BannerState): ValidationResult {
     errors.push({ field: 'title', message: 'Title must be 100 characters or less' });
   }
 
-  // Speaker name validation
-  if (!state.speakerName || state.speakerName.trim().length === 0) {
-    errors.push({ field: 'speakerName', message: 'Speaker name is required' });
-  } else if (state.speakerName.length > 50) {
-    errors.push({ field: 'speakerName', message: 'Speaker name must be 50 characters or less' });
-  }
+  // Validate each speaker based on speaker count
+  for (let i = 0; i < state.speakerCount; i++) {
+    const speaker = state.speakers[i];
+    
+    if (!speaker) {
+      errors.push({ field: 'speakers', message: `Speaker ${i + 1} data is missing` });
+      continue;
+    }
 
-  // Speaker role validation
-  if (!state.speakerRole || state.speakerRole.trim().length === 0) {
-    errors.push({ field: 'speakerRole', message: 'Speaker title/company is required' });
-  } else if (state.speakerRole.length > 50) {
-    errors.push({ field: 'speakerRole', message: 'Speaker role must be 50 characters or less' });
+    // Speaker name validation
+    if (!speaker.name || speaker.name.trim().length === 0) {
+      errors.push({ field: 'speakers', message: `Speaker ${i + 1} name is required` });
+    } else if (speaker.name.length > 50) {
+      errors.push({ field: 'speakers', message: `Speaker ${i + 1} name must be 50 characters or less` });
+    }
+
+    // Speaker title validation
+    if (!speaker.title || speaker.title.trim().length === 0) {
+      errors.push({ field: 'speakers', message: `Speaker ${i + 1} title/company is required` });
+    } else if (speaker.title.length > 50) {
+      errors.push({ field: 'speakers', message: `Speaker ${i + 1} title must be 50 characters or less` });
+    }
   }
 
   // Date validation

@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useBannerState } from '../../context/BannerContext';
-import MinimalistTemplate from '../templates/MinimalistTemplate';
+import ProfessionalTemplate from '../templates/ProfessionalTemplate';
+import DuoTemplate from '../templates/DuoTemplate';
+import PanelTemplate from '../templates/PanelTemplate';
 
 const BannerCanvas: React.FC = () => {
   const { state } = useBannerState();
@@ -14,7 +16,30 @@ const BannerCanvas: React.FC = () => {
     }, 100);
 
     return () => clearTimeout(timer);
-  }, [state.title, state.speakerName, state.speakerRole]);
+  }, [state.title, state.speakers]);
+
+  // Template factory - select template based on speaker count
+  const renderTemplate = () => {
+    const templateProps = {
+      title: state.title,
+      speakers: state.speakers,
+      date: state.date,
+      time: state.time,
+      timezone: state.timezone,
+      showTimezone: state.showTimezone,
+      accentColor: state.accentColor,
+    };
+
+    switch (state.template) {
+      case 'duo':
+        return <DuoTemplate {...templateProps} />;
+      case 'panel':
+        return <PanelTemplate {...templateProps} />;
+      case 'professional':
+      default:
+        return <ProfessionalTemplate {...templateProps} />;
+    }
+  };
 
   return (
     <div className="relative">
@@ -26,7 +51,7 @@ const BannerCanvas: React.FC = () => {
       
       {/* Render template at actual size, then scale down for preview */}
       <div className="transform-gpu" style={{ transformOrigin: 'top left' }}>
-        <MinimalistTemplate state={state} />
+        {renderTemplate()}
       </div>
     </div>
   );

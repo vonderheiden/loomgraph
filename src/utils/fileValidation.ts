@@ -126,6 +126,35 @@ export async function validateUploadedFile(file: File): Promise<{
 }
 
 /**
+ * Simple synchronous validation for image files
+ * Used by upload components for immediate feedback
+ */
+export function validateImageFile(file: File, maxSize: number = 5 * 1024 * 1024): { 
+  isValid: boolean; 
+  error?: string;
+} {
+  // Check file size
+  if (file.size > maxSize) {
+    const sizeMB = Math.round(maxSize / (1024 * 1024));
+    return { 
+      isValid: false, 
+      error: `File size must be less than ${sizeMB}MB` 
+    };
+  }
+  
+  // Check MIME type
+  const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+  if (!allowedTypes.includes(file.type)) {
+    return { 
+      isValid: false, 
+      error: 'File must be JPG or PNG' 
+    };
+  }
+  
+  return { isValid: true };
+}
+
+/**
  * Validate company logo file (similar to headshot but with different size limits)
  */
 export async function validateLogoFile(file: File): Promise<{ 

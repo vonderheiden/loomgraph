@@ -1,10 +1,14 @@
 import React from 'react';
+import { useBannerState } from '../context/BannerContext';
+import SpeakerCountSelector from './form/SpeakerCountSelector';
 import WebinarDetailsForm from './form/WebinarDetailsForm';
+import SpeakerSection from './form/SpeakerSection';
 import DateTimeForm from './form/DateTimeForm';
-import HeadshotUploader from './form/HeadshotUploader';
 import ColorPicker from './form/ColorPicker';
 
 const FormPanel: React.FC = () => {
+  const { state, updateSpeaker } = useBannerState();
+
   return (
     <div className="w-full lg:w-1/2 p-6 overflow-y-auto">
       <div className="max-w-2xl mx-auto space-y-6">
@@ -17,9 +21,20 @@ const FormPanel: React.FC = () => {
           </p>
         </div>
 
+        <SpeakerCountSelector />
         <WebinarDetailsForm />
+        
+        {/* Dynamic Speaker Sections */}
+        {state.speakers.slice(0, state.speakerCount).map((speaker, index) => (
+          <SpeakerSection
+            key={index}
+            speaker={speaker}
+            speakerIndex={index}
+            onUpdate={(updates) => updateSpeaker(index, updates)}
+          />
+        ))}
+
         <DateTimeForm />
-        <HeadshotUploader />
         <ColorPicker />
       </div>
     </div>
