@@ -87,6 +87,14 @@ export function Header({ onNavigate }: NavigationProps) {
             >
               How it Works
             </button>
+            <button 
+              onClick={() => scrollToSection('faq')} 
+              className="text-gray-600 hover:text-gray-900 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded px-3 py-2 min-h-[44px]"
+              aria-label="Navigate to FAQ section"
+              type="button"
+            >
+              FAQ
+            </button>
           </nav>
           
           {/* CTA Button */}

@@ -32,43 +32,52 @@ export function HowItWorksSection() {
         
         {/* Steps Grid */}
         <div className="grid md:grid-cols-3 gap-8">
-          {CONTENT.howItWorks.steps.map((step, index) => (
-            <article 
-              key={index}
-              className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden hover:shadow-md transition-shadow"
-              aria-labelledby={`step-${step.number}-title`}
-            >
-              {/* Step Image */}
-              <div className="w-full h-48 bg-gray-100 overflow-hidden">
-                <img 
-                  src={`/backgrounds/${step.number}-${step.title.replace(/\s+/g, ' ')}.png`}
-                  alt={`${step.title} - ${step.description}`}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              
-              {/* Step Content */}
-              <div className="p-8 text-center">
-                {/* Large Number */}
-                <div 
-                  className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-100 text-blue-600 text-2xl font-bold mb-4"
-                  aria-label={`Step ${step.number}`}
-                >
-                  {step.number}
+          {CONTENT.howItWorks.steps.map((step, index) => {
+            // Map step numbers to actual filenames
+            const imageFiles = [
+              '1-Input data.png',
+              '2-Brand Style.png',
+              '3-Instant Export.png'
+            ];
+            
+            return (
+              <article 
+                key={index}
+                className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden hover:shadow-md transition-shadow"
+                aria-labelledby={`step-${step.number}-title`}
+              >
+                {/* Step Image */}
+                <div className="w-full h-64 bg-gray-50 overflow-hidden flex items-center justify-center p-4">
+                  <img 
+                    src={`/backgrounds/${imageFiles[index]}`}
+                    alt={`${step.title} - ${step.description}`}
+                    className="w-full h-full object-contain"
+                  />
                 </div>
                 
-                {/* Step Title */}
-                <h3 id={`step-${step.number}-title`} className="text-xl font-semibold text-gray-900 mb-3">
-                  {step.title}
-                </h3>
-                
-                {/* Step Description */}
-                <p className="text-gray-600 leading-relaxed">
-                  {step.description}
-                </p>
-              </div>
-            </article>
-          ))}
+                {/* Step Content */}
+                <div className="p-8 text-center">
+                  {/* Large Number */}
+                  <div 
+                    className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-100 text-blue-600 text-2xl font-bold mb-4"
+                    aria-label={`Step ${step.number}`}
+                  >
+                    {step.number}
+                  </div>
+                  
+                  {/* Step Title */}
+                  <h3 id={`step-${step.number}-title`} className="text-xl font-semibold text-gray-900 mb-3">
+                    {step.title}
+                  </h3>
+                  
+                  {/* Step Description */}
+                  <p className="text-gray-600 leading-relaxed">
+                    {step.description}
+                  </p>
+                </div>
+              </article>
+            );
+          })}
         </div>
       </div>
     </section>

@@ -63,14 +63,14 @@ export function HeroSection({ onNavigate }: NavigationProps) {
             </div>
           </div>
           
-          {/* Right Column: Visual Comparison */}
-          <div className="grid grid-cols-2 gap-8">
+          {/* Right Column: Visual Comparison - Stacked Vertically */}
+          <div className="space-y-6">
             {/* Before: Confused woman with Canva */}
             <div>
-              <p className="text-sm text-gray-500 mb-2 text-center font-medium">
+              <p className="text-sm text-gray-500 mb-3 text-center font-medium">
                 Before (Canva)
               </p>
-              <div className="rounded-lg overflow-hidden shadow-lg border border-gray-200">
+              <div className="rounded-xl overflow-hidden shadow-xl border-2 border-gray-200">
                 <img 
                   src="/backgrounds/confused-woman.png" 
                   alt="Confused woman struggling with design tools like Canva"
@@ -81,10 +81,10 @@ export function HeroSection({ onNavigate }: NavigationProps) {
             
             {/* After: Happy woman with LoomGraph */}
             <div>
-              <p className="text-sm text-gray-500 mb-2 text-center font-medium">
+              <p className="text-sm text-gray-500 mb-3 text-center font-medium">
                 After (LoomGraph)
               </p>
-              <div className="rounded-lg overflow-hidden shadow-lg border border-gray-200">
+              <div className="rounded-xl overflow-hidden shadow-xl border-2 border-green-200">
                 <img 
                   src="/backgrounds/happy-woman.png" 
                   alt="Happy woman easily creating banners with LoomGraph"
