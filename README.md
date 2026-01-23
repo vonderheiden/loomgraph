@@ -20,7 +20,7 @@ A fast, form-based webinar banner generator that creates professional LinkedIn-o
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/YOUR_USERNAME/loomgraph.git
+git clone https://github.com/vonderheiden/loomgraph.git
 cd loomgraph
 ```
 
@@ -29,12 +29,18 @@ cd loomgraph
 npm install
 ```
 
-3. Start the development server:
+3. Create environment file (optional for MVP):
+```bash
+cp .env.example .env.local
+# Edit .env.local with your values if needed
+```
+
+4. Start the development server:
 ```bash
 npm run dev
 ```
 
-4. Open your browser to `http://localhost:5173`
+5. Open your browser to `http://localhost:5173`
 
 ## 🏗️ Build for Production
 
@@ -146,6 +152,19 @@ MIT License - feel free to use this project for personal or commercial purposes.
 ## 🤝 Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
+
+## 🔒 Security
+
+LoomGraph implements enterprise-grade security:
+
+- ✅ **Content Security Policy (CSP)** - Prevents XSS attacks
+- ✅ **Security Headers** - X-Frame-Options, X-Content-Type-Options, etc.
+- ✅ **Input Sanitization** - All user inputs are sanitized
+- ✅ **File Upload Validation** - Magic number checking prevents file type spoofing
+- ✅ **No Secrets in Code** - Environment variables for sensitive data
+- ✅ **Secure by Default** - Minimal permissions and strict policies
+
+For detailed security information, see `.kiro/specs/loomgraph-banner-generator/SECURITY-AUDIT-2026-01-22.md`
 
 ## 🐛 Known Issues
 
