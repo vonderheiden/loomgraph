@@ -28,7 +28,8 @@ const BannerCanvas: React.FC = () => {
       timezone: state.timezone,
       showTimezone: state.showTimezone,
       accentColor: state.accentColor,
-      backgroundImageUrl: state.backgroundImageUrl,
+      backgroundId: state.backgroundId,
+      customBackgroundUrl: state.customBackgroundUrl,
     };
 
     switch (state.template) {

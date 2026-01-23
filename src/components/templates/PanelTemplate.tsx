@@ -1,6 +1,7 @@
 import React from 'react';
 import { Speaker } from '../../types/banner.types';
 import { formatDate, formatTime } from '../../utils/exportHelpers';
+import { getBackgroundById } from '../../constants/backgrounds';
 
 interface PanelTemplateProps {
   title: string;
@@ -10,7 +11,8 @@ interface PanelTemplateProps {
   timezone: 'PT' | 'ET' | 'GMT' | 'UTC' | 'CET';
   showTimezone: boolean;
   accentColor: string;
-  backgroundImageUrl?: string | null;
+  backgroundId: string;
+  customBackgroundUrl?: string | null;
 }
 
 const PanelTemplate: React.FC<PanelTemplateProps> = ({
@@ -21,13 +23,16 @@ const PanelTemplate: React.FC<PanelTemplateProps> = ({
   timezone,
   showTimezone,
   accentColor,
-  backgroundImageUrl,
+  backgroundId,
+  customBackgroundUrl,
 }) => {
   const speaker1 = speakers[0] || { name: '', title: '', headshotUrl: null, companyLogoUrl: null };
   const speaker2 = speakers[1] || { name: '', title: '', headshotUrl: null, companyLogoUrl: null };
   const speaker3 = speakers[2] || { name: '', title: '', headshotUrl: null, companyLogoUrl: null };
 
-  const defaultBackground = 'linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%)';
+  const background = getBackgroundById(backgroundId);
+  const isColorBackground = background?.type === 'color';
+  const backgroundValue = customBackgroundUrl || background?.value || '#1a1a1a';
 
   const renderSpeaker = (speaker: Speaker, index: number) => (
     <div key={index} className="flex items-center gap-3">
@@ -80,20 +85,20 @@ const PanelTemplate: React.FC<PanelTemplateProps> = ({
       className="relative w-[1200px] h-[627px] overflow-hidden"
       style={{ fontFamily: 'Inter, sans-serif' }}
     >
-      {/* Top Section - Background Image with Dark Overlay (80%) */}
+      {/* Top Section - Background with Dark Overlay (80%) */}
       <div className="absolute inset-0 h-[502px]">
-        {/* Background Image or Gradient */}
-        {backgroundImageUrl ? (
+        {/* Background - Color or Image */}
+        {isColorBackground ? (
+          <div
+            className="absolute inset-0"
+            style={{ backgroundColor: backgroundValue }}
+          />
+        ) : (
           <img
-            src={backgroundImageUrl}
+            src={backgroundValue}
             alt="Background"
             className="absolute inset-0 w-full h-full object-cover"
             crossOrigin="anonymous"
-          />
-        ) : (
-          <div
-            className="absolute inset-0"
-            style={{ background: defaultBackground }}
           />
         )}
 

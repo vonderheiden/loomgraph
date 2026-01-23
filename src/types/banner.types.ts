@@ -24,8 +24,9 @@ export interface BannerState {
   // Visual Customization
   template: 'professional' | 'duo' | 'panel';
   accentColor: string;
-  backgroundImageUrl: string | null;
-  backgroundImageFile: File | null;
+  backgroundId: string; // References background from constants or 'custom'
+  customBackgroundUrl: string | null; // For user-uploaded images
+  customBackgroundFile: File | null;
 }
 
 // Template configuration

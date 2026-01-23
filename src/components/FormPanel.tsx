@@ -5,6 +5,7 @@ import WebinarDetailsForm from './form/WebinarDetailsForm';
 import SpeakerSection from './form/SpeakerSection';
 import DateTimeForm from './form/DateTimeForm';
 import ColorPicker from './form/ColorPicker';
+import BackgroundSelector from './form/BackgroundSelector';
 
 const FormPanel: React.FC = () => {
   const { state, updateSpeaker } = useBannerState();
@@ -35,6 +36,7 @@ const FormPanel: React.FC = () => {
 
           <DateTimeForm />
           <ColorPicker />
+          <BackgroundSelector />
         </div>
       </div>
     </div>

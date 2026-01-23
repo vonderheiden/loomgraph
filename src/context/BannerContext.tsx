@@ -22,8 +22,9 @@ const initialState: BannerState = {
   showTimezone: true,
   template: 'professional',
   accentColor: '#a4d233', // Lime green
-  backgroundImageUrl: null,
-  backgroundImageFile: null,
+  backgroundId: 'color-dark-gray', // Default to dark gray
+  customBackgroundUrl: null,
+  customBackgroundFile: null,
 };
 
 // Context type
