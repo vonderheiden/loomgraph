@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import { Upload, X, User, ChevronDown, ChevronUp } from 'lucide-react';
 import { Speaker } from '../../types/banner.types';
 import { validateImageFile } from '../../utils/fileValidation';
@@ -8,15 +8,18 @@ interface SpeakerSectionProps {
   speaker: Speaker;
   speakerIndex: number;
   onUpdate: (updates: Partial<Speaker>) => void;
+  isExpanded: boolean;
+  onToggle: () => void;
 }
 
 const SpeakerSection: React.FC<SpeakerSectionProps> = ({
   speaker,
   speakerIndex,
   onUpdate,
+  isExpanded,
+  onToggle,
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [isExpanded, setIsExpanded] = useState(speakerIndex === 0); // First speaker expanded by default
 
   const nameMaxLength = 50;
   const titleMaxLength = 50;
@@ -60,7 +63,7 @@ const SpeakerSection: React.FC<SpeakerSectionProps> = ({
       {/* Collapsible Header */}
       <button
         type="button"
-        onClick={() => setIsExpanded(!isExpanded)}
+        onClick={onToggle}
         className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors"
       >
         <div className="flex items-center gap-3">

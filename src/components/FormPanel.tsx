@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useBannerState } from '../context/BannerContext';
 import SpeakerCountSelector from './form/SpeakerCountSelector';
 import WebinarDetailsForm from './form/WebinarDetailsForm';
@@ -9,6 +9,7 @@ import BackgroundSelector from './form/BackgroundSelector';
 
 const FormPanel: React.FC = () => {
   const { state, updateSpeaker } = useBannerState();
+  const [expandedSpeaker, setExpandedSpeaker] = useState<number>(0); // Track which speaker is expanded
 
   return (
     <div className="w-full lg:w-2/5 bg-white border-r border-gray-200">
@@ -24,13 +25,15 @@ const FormPanel: React.FC = () => {
           <SpeakerCountSelector />
           <WebinarDetailsForm />
           
-          {/* Dynamic Speaker Sections */}
+          {/* Dynamic Speaker Sections with auto-collapse */}
           {state.speakers.slice(0, state.speakerCount).map((speaker, index) => (
             <SpeakerSection
               key={index}
               speaker={speaker}
               speakerIndex={index}
               onUpdate={(updates) => updateSpeaker(index, updates)}
+              isExpanded={expandedSpeaker === index}
+              onToggle={() => setExpandedSpeaker(expandedSpeaker === index ? -1 : index)}
             />
           ))}
 
