@@ -8,7 +8,7 @@
 
 export const CONTENT = {
   hero: {
-    headline: "Stop Fiddling with design tools like Canva. Generate Your Webinar Banners in 60 Seconds.",
+    headline: "Stop Fiddling with Adobe or Canva. Generate Your Webinar Banners in 60 Seconds.",
     subtext: "The first-ever automated banner generator built for busy founders. High-converting LinkedIn layouts. Zero design skills required.",
     ctaText: "Create Your First Banner — It's Free",
     stats: [

@@ -15,8 +15,6 @@ import { GeometricShape } from './GeometricShape';
  * 
  * Navigation Links:
  * - "How it Works" → scrolls to #how-it-works section
- * - "Templates" → scrolls to #templates section
- * - "Pricing" → scrolls to #pricing section
  * 
  * Styling:
  * - Fixed positioning at top of viewport
@@ -88,22 +86,6 @@ export function Header({ onNavigate }: NavigationProps) {
               type="button"
             >
               How it Works
-            </button>
-            <button 
-              onClick={() => scrollToSection('templates')} 
-              className="text-gray-600 hover:text-gray-900 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded px-3 py-2 min-h-[44px]"
-              aria-label="Navigate to Templates section"
-              type="button"
-            >
-              Templates
-            </button>
-            <button 
-              onClick={() => scrollToSection('pricing')} 
-              className="text-gray-600 hover:text-gray-900 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded px-3 py-2 min-h-[44px]"
-              aria-label="Navigate to Pricing section"
-              type="button"
-            >
-              Pricing
             </button>
           </nav>
           
