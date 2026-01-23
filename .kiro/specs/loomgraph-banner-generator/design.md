@@ -51,11 +51,25 @@ LoomGraph follows a component-based React architecture with real-time state sync
 
 ### 2. Form Components
 
+#### `SpeakerCountSelector.tsx` (NEW - Phase 1A-Revised)
+- Dropdown with options: 1, 2, or 3 speakers
+- Updates speakerCount in context
+- Triggers dynamic form re-render
+- Positioned at top of form
+
 #### `WebinarDetailsForm.tsx`
-- Inputs: Title, Speaker Name, Title/Company
+- Input: Webinar Title only
 - Real-time character count
 - Validation feedback
 - Smart truncation warnings
+- **NOTE**: Speaker fields moved to SpeakerSection component
+
+#### `SpeakerSection.tsx` (NEW - Phase 1A-Revised)
+- Reusable component for each speaker
+- Props: speakerIndex, speaker data, updateSpeaker callback
+- Contains: Name input, Title input, Headshot upload, Company logo upload
+- Labeled as "Speaker 1", "Speaker 2", "Speaker 3"
+- Rendered dynamically based on speakerCount
 
 #### `DateTimeForm.tsx`
 - Date picker component
@@ -68,6 +82,14 @@ LoomGraph follows a component-based React architecture with real-time state sync
 - Image preview with circular crop
 - File validation (size, format)
 - Replace/remove functionality
+- **Refactored**: Now reusable for any speaker index (pass speakerIndex prop)
+
+#### `CompanyLogoUploader.tsx` (NEW - Phase 1A-Revised)
+- Similar to HeadshotUploader but for company logos
+- Smaller preview size (logo aspect ratio)
+- Optional field (can be left blank)
+- Supports PNG with transparency
+- Max 2MB file size
 
 #### `TemplateSelector.tsx`
 - Horizontal thumbnail gallery
@@ -86,16 +108,48 @@ LoomGraph follows a component-based React architecture with real-time state sync
 #### `BannerCanvas.tsx`
 - HTML5 Canvas or html-to-image wrapper
 - Renders banner based on current state
-- Implements template layouts
+- **Template Factory**: Switches template based on speakerCount
+  - 1 speaker → ProfessionalTemplate
+  - 2 speakers → DuoTemplate
+  - 3 speakers → PanelTemplate
 - Handles text scaling and positioning
 
 #### `TemplateRenderer.tsx`
-- Template-specific rendering logic
+- Template factory pattern
+- Template switching logic based on speakerCount
 - Three template implementations:
-  - `MinimalistTemplate`
-  - `BoldFounderTemplate`
-  - `DuoTemplate`
+  - `ProfessionalTemplate` (1 speaker)
+  - `DuoTemplate` (2 speakers)
+  - `PanelTemplate` (3 speakers)
 - Shared rendering utilities
+
+#### Template Components
+Each template receives:
+- `speakers: Speaker[]` - Array of speaker data
+- `title: string` - Webinar title
+- `schedule: Schedule` - Date/time info
+- `branding: Branding` - Colors and logos
+
+**ProfessionalTemplate** (formerly MinimalistTemplate)
+- Single speaker layout
+- Large headshot on right (300-400px)
+- Content on left (60% width)
+- Company logo below speaker info
+- Bold, vibrant background
+
+**DuoTemplate**
+- Two speakers side-by-side
+- Circular headshots (200-250px each)
+- Title at top center
+- Company logos below each speaker
+- Balanced layout
+
+**PanelTemplate**
+- Three speakers in horizontal row
+- Circular headshots (180-220px each)
+- Title at top
+- Company logos below each speaker
+- Professional panel layout
 
 #### `ExportButton.tsx`
 - Download trigger
@@ -136,16 +190,59 @@ interface Branding {
 ```
 
 ### BannerState Interface (UI State)
-The UI state extends AssetConfig with additional UI-specific fields that don't need to be persisted.
+The UI state should align with AssetConfig for future Supabase integration while maintaining UI-specific fields.
 
+**RECOMMENDED STRUCTURE** (for Phase 1A-Revised refactoring):
 ```typescript
-interface BannerState extends AssetConfig {
-  // UI-only state
-  template: 'minimalist' | 'bold-founder' | 'duo';
-  showTimezone: boolean;
+interface BannerState {
+  // Core content (maps to Supabase content JSONB)
+  title: string;
+  speakers: Speaker[];
+  schedule: Schedule;
+  branding: Branding;
   
-  // Transient upload state
-  uploadingHeadshot: boolean;
+  // UI-only state
+  speakerCount: 1 | 2 | 3;
+  template: 'professional' | 'duo' | 'panel';
+  showTimezone: boolean;
+}
+
+interface Speaker {
+  name: string;
+  title: string;
+  headshotUrl: string | null;
+  headshotFile: File | null;
+  companyLogoUrl: string | null;
+  companyLogoFile: File | null;
+}
+
+interface Schedule {
+  date: string; // ISO 8601 format
+  time: string; // HH:MM format
+  timezone: 'PT' | 'ET' | 'GMT' | 'UTC' | 'CET';
+}
+
+interface Branding {
+  primaryColor: string; // Hex color
+  logoUrl: string | null;
+  logoFile: File | null;
+}
+```
+
+**CURRENT IMPLEMENTATION** (Phase 1A - needs refactoring):
+```typescript
+// Simplified flat structure - NOT aligned with Supabase
+interface BannerState {
+  title: string;
+  speakerName: string;  // ❌ Should be speakers[]
+  speakerRole: string;  // ❌ Should be speakers[]
+  headshotUrl: string | null;  // ❌ Should be speakers[]
+  date: string;  // ❌ Should be schedule.date
+  time: string;  // ❌ Should be schedule.time
+  timezone: 'PT' | 'ET' | 'GMT' | 'UTC' | 'CET';
+  showTimezone: boolean;
+  template: 'minimalist' | 'bold-founder' | 'duo';
+  accentColor: string;  // ❌ Should be branding.primaryColor
   headshotFile: File | null;
 }
 ```
@@ -203,26 +300,43 @@ interface TypographyConfig {
 
 ## Template Designs
 
-### Template 1: "The Minimalist"
-- Clean, centered layout
-- Large title with ample whitespace
-- Circular headshot in top-right
-- Thin accent line at bottom
-- Minimal text hierarchy
+### Template 1: "The Professional" (1 Speaker)
+- Bold, solid color background (customizable)
+- Company logo in top-left corner
+- Large title text on left side (60% width)
+- Large circular headshot on right side (300-400px diameter) with white border
+- Speaker name and title on left below title
+- Speaker company logo below speaker info (60-100px width)
+- Date/time/location info on left side
+- "Register Now" CTA at bottom-left
+- Diagonal accent stripe or geometric element (optional)
 
-### Template 2: "The Bold Founder"
-- Left-aligned content
-- Bold, oversized title
-- Headshot with accent border
-- Strong color blocks
-- High contrast design
+### Template 2: "The Duo" (2 Speakers)
+- Vibrant gradient or solid background
+- Title at top center or top-left
+- Two large circular headshots side-by-side (200-250px each) with white borders
+- Speaker names and titles below each headshot
+- Company logo below each speaker's title (60-100px width each)
+- Date/time info at bottom with icons
+- Website or CTA at bottom-right
 
-### Template 3: "The Duo"
-- Split layout for two speakers
-- Dual headshots (placeholder for second)
-- Balanced typography
-- Shared accent elements
-- Collaborative aesthetic
+### Template 3: "The Panel" (3 Speakers)
+- Modern gradient background (blue-to-purple or customizable)
+- Company logo and partner logo at top (split header)
+- Title text prominently displayed
+- Three circular headshots in horizontal row (180-220px each) with white borders
+- Speaker names and titles below each headshot
+- Company logo below each speaker's title (60-100px width each)
+- Date/time info at bottom-left
+- "Register Now" CTA button at bottom-right
+
+### Company Logo Display
+- **Main Logo**: Top-left or top-center (organizer/host company)
+- **Speaker Company Logos**: Below each speaker's title (employer logos)
+  - Examples: Google, Microsoft, Amazon logos
+  - Each speaker can have different company logo
+  - Optional field (can be left blank)
+- **Partner Logo**: Top-right (co-host or sponsor, optional)
 
 ## Rendering Engine
 
@@ -303,16 +417,18 @@ The application uses a single `assetConfig` state object that serves as the sour
 ### Context Provider Pattern
 ```typescript
 export const BannerProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [assetConfig, setAssetConfig] = useState<AssetConfig>(initialAssetConfig);
-  const [template, setTemplate] = useState<string>('minimalist');
-  const [showTimezone, setShowTimezone] = useState<boolean>(true);
+  const [state, setState] = useState<BannerState>(initialState);
   
-  const updateAssetConfig = useCallback((updates: Partial<AssetConfig>) => {
-    setAssetConfig(prev => ({ ...prev, ...updates }));
+  const updateField = useCallback(<K extends keyof BannerState>(
+    field: K,
+    value: BannerState[K]
+  ) => {
+    setState(prev => ({ ...prev, [field]: value }));
   }, []);
   
+  // NEW: Update individual speaker in array
   const updateSpeaker = useCallback((index: number, updates: Partial<Speaker>) => {
-    setAssetConfig(prev => ({
+    setState(prev => ({
       ...prev,
       speakers: prev.speakers.map((speaker, i) => 
         i === index ? { ...speaker, ...updates } : speaker
@@ -320,20 +436,44 @@ export const BannerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     }));
   }, []);
   
+  // NEW: Handle speaker count changes with data preservation
+  const setSpeakerCount = useCallback((count: 1 | 2 | 3) => {
+    setState(prev => {
+      const newSpeakers = [...prev.speakers];
+      
+      // Add empty speakers if increasing count
+      while (newSpeakers.length < count) {
+        newSpeakers.push({
+          name: '',
+          title: '',
+          headshotUrl: null,
+          headshotFile: null,
+          companyLogoUrl: null,
+          companyLogoFile: null,
+        });
+      }
+      
+      // Keep all speakers (don't delete) when decreasing count
+      // This preserves data if user switches back
+      
+      return {
+        ...prev,
+        speakerCount: count,
+        speakers: newSpeakers,
+      };
+    });
+  }, []);
+  
   const resetState = useCallback(() => {
-    setAssetConfig(initialAssetConfig);
-    setTemplate('minimalist');
+    setState(initialState);
   }, []);
   
   return (
     <BannerContext.Provider value={{ 
-      assetConfig, 
-      template,
-      showTimezone,
-      updateAssetConfig, 
+      state,
+      updateField,
       updateSpeaker,
-      setTemplate,
-      setShowTimezone,
+      setSpeakerCount,
       resetState 
     }}>
       {children}
@@ -805,9 +945,12 @@ New templates can be added without database changes:
 src/
 ├── components/
 │   ├── form/
+│   │   ├── SpeakerCountSelector.tsx  (NEW)
 │   │   ├── WebinarDetailsForm.tsx
+│   │   ├── SpeakerSection.tsx        (NEW)
 │   │   ├── DateTimeForm.tsx
 │   │   ├── HeadshotUploader.tsx
+│   │   ├── CompanyLogoUploader.tsx   (NEW)
 │   │   ├── TemplateSelector.tsx
 │   │   └── ColorPicker.tsx
 │   ├── preview/
@@ -816,9 +959,9 @@ src/
 │   │   └── ExportButton.tsx
 │   ├── templates/
 │   │   ├── TemplateRenderer.tsx
-│   │   ├── MinimalistTemplate.tsx
-│   │   ├── BoldFounderTemplate.tsx
-│   │   └── DuoTemplate.tsx
+│   │   ├── ProfessionalTemplate.tsx  (renamed from MinimalistTemplate)
+│   │   ├── DuoTemplate.tsx
+│   │   └── PanelTemplate.tsx
 │   ├── auth/
 │   │   ├── AuthModal.tsx
 │   │   ├── AuthProvider.tsx
