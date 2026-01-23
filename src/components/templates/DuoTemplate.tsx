@@ -24,162 +24,171 @@ const DuoTemplate: React.FC<DuoTemplateProps> = ({
   const speaker1 = speakers[0] || { name: '', title: '', headshotUrl: null, companyLogoUrl: null };
   const speaker2 = speakers[1] || { name: '', title: '', headshotUrl: null, companyLogoUrl: null };
 
+  const renderSpeaker = (speaker: Speaker, index: number) => (
+    <div key={index} className="flex flex-col items-center">
+      {speaker.headshotUrl ? (
+        <div
+          className="rounded-2xl overflow-hidden bg-white shadow-xl mb-3"
+          style={{
+            width: '200px',
+            height: '200px',
+            border: '5px solid rgba(255, 255, 255, 0.1)',
+          }}
+        >
+          <img
+            src={speaker.headshotUrl}
+            alt={speaker.name}
+            className="w-full h-full object-cover"
+            crossOrigin="anonymous"
+          />
+        </div>
+      ) : (
+        <div
+          className="rounded-2xl flex items-center justify-center text-white font-black bg-white/10 mb-3"
+          style={{
+            width: '200px',
+            height: '200px',
+            border: '5px solid rgba(255, 255, 255, 0.1)',
+            fontSize: '60px',
+          }}
+        >
+          {speaker.name ? speaker.name.charAt(0).toUpperCase() : '?'}
+        </div>
+      )}
+      <p className="text-lg font-bold text-white text-center">
+        {speaker.name || `Speaker ${index + 1}`}
+      </p>
+      <p className="text-sm text-gray-300 text-center">
+        {speaker.title || 'Title & Company'}
+      </p>
+    </div>
+  );
+
   return (
     <div
       id="banner-template"
       className="relative w-[1200px] h-[627px] overflow-hidden"
       style={{ fontFamily: 'Inter, sans-serif' }}
     >
-      {/* Background with rich gradient */}
-      <div
-        className="absolute inset-0"
-        style={{
-          background: `linear-gradient(135deg, ${accentColor} 0%, ${accentColor}cc 50%, ${accentColor}ee 100%)`,
-        }}
-      />
+      {/* Top Section - Dark Background (80%) */}
+      <div className="absolute inset-0 h-[502px]">
+        {/* Dark filtered background */}
+        <div
+          className="absolute inset-0"
+          style={{
+            background: 'linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%)',
+          }}
+        />
 
-      {/* Decorative dots pattern - top right */}
-      <div className="absolute top-8 right-8 grid grid-cols-6 gap-3 opacity-20">
-        {[...Array(36)].map((_, i) => (
-          <div key={i} className="w-2 h-2 rounded-full bg-white" />
-        ))}
+        {/* Subtle pattern overlay */}
+        <div
+          className="absolute inset-0 opacity-5"
+          style={{
+            backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)',
+            backgroundSize: '40px 40px',
+          }}
+        />
+
+        {/* Content */}
+        <div className="relative h-full flex flex-col justify-between px-16 py-12">
+          {/* Top - Webinar Tag & Title */}
+          <div>
+            {/* Webinar Tag */}
+            <div
+              className="inline-block px-4 py-1.5 rounded-md mb-6 font-bold text-sm tracking-wide"
+              style={{
+                backgroundColor: accentColor,
+                color: 'white',
+              }}
+            >
+              WEBINAR
+            </div>
+
+            {/* Title */}
+            <h1
+              className="font-bold leading-tight text-white mb-6"
+              style={{
+                fontSize: title.length > 60 ? '42px' : title.length > 40 ? '48px' : '56px',
+                fontWeight: 700,
+                lineHeight: 1.15,
+                letterSpacing: '-0.01em',
+                maxWidth: '900px',
+              }}
+            >
+              {title || 'Your Webinar Title Here'}
+            </h1>
+
+            {/* Date & Time */}
+            <div className="flex items-center gap-6">
+              {date && (
+                <div
+                  className="flex items-center gap-2 font-bold text-base"
+                  style={{ color: accentColor }}
+                >
+                  <span className="text-xl">📅</span>
+                  <span>{formatDate(date)}</span>
+                </div>
+              )}
+              {time && (
+                <div
+                  className="flex items-center gap-2 font-bold text-base"
+                  style={{ color: accentColor }}
+                >
+                  <span className="text-xl">🕐</span>
+                  <span>{formatTime(time, showTimezone ? timezone : undefined)}</span>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Bottom - Speakers */}
+          <div className="flex justify-center items-end gap-16">
+            {renderSpeaker(speaker1, 0)}
+            {renderSpeaker(speaker2, 1)}
+          </div>
+        </div>
       </div>
 
-      {/* Content Container */}
-      <div className="relative h-full flex flex-col justify-between px-16 py-14">
-        {/* Title Section */}
-        <div className="text-center">
-          <h1
-            className="font-black leading-tight text-white"
-            style={{
-              fontSize: title.length > 50 ? '52px' : title.length > 30 ? '60px' : '68px',
-              fontWeight: 900,
-              lineHeight: 1.1,
-              letterSpacing: '-0.02em',
-            }}
-          >
-            {title || 'Your Webinar Title Here'}
-          </h1>
+      {/* Bottom Section - Accent Color Footer (20%) */}
+      <div
+        className="absolute bottom-0 left-0 right-0 h-[125px] flex items-center justify-between px-16"
+        style={{
+          backgroundColor: accentColor,
+        }}
+      >
+        {/* Register Button */}
+        <div
+          className="px-10 py-4 rounded-lg font-bold text-lg"
+          style={{
+            backgroundColor: 'white',
+            color: accentColor,
+            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+          }}
+        >
+          REGISTER NOW
         </div>
 
-        {/* Speakers Section - Side by Side */}
-        <div className="flex justify-center items-center gap-20">
-          {/* Speaker 1 */}
-          <div className="flex flex-col items-center">
-            {speaker1.headshotUrl ? (
-              <div 
-                className="rounded-full overflow-hidden bg-white shadow-2xl mb-5"
-                style={{ 
-                  width: '260px', 
-                  height: '260px',
-                  border: '10px solid white',
-                  boxShadow: '0 20px 40px -10px rgba(0, 0, 0, 0.3)',
-                }}
-              >
-                <img
-                  src={speaker1.headshotUrl}
-                  alt={speaker1.name}
-                  className="w-full h-full object-cover"
-                  crossOrigin="anonymous"
-                />
-              </div>
-            ) : (
-              <div 
-                className="rounded-full flex items-center justify-center text-white font-black bg-white/20 mb-5"
-                style={{ 
-                  width: '260px', 
-                  height: '260px',
-                  border: '10px solid white',
-                  fontSize: '80px',
-                }}
-              >
-                {speaker1.name ? speaker1.name.charAt(0).toUpperCase() : '?'}
-              </div>
-            )}
-            <p className="text-3xl font-bold text-white text-center mb-2" style={{ letterSpacing: '-0.01em' }}>
-              {speaker1.name || 'Speaker 1'}
-            </p>
-            <p className="text-lg text-white text-center mb-3" style={{ opacity: 0.95 }}>
-              {speaker1.title || 'Title & Company'}
-            </p>
-            {speaker1.companyLogoUrl && (
-              <img
-                src={speaker1.companyLogoUrl}
-                alt="Company logo"
-                className="h-10 object-contain"
-                style={{ maxWidth: '140px', filter: 'brightness(0) invert(1)' }}
-                crossOrigin="anonymous"
-              />
-            )}
-          </div>
-
-          {/* Speaker 2 */}
-          <div className="flex flex-col items-center">
-            {speaker2.headshotUrl ? (
-              <div 
-                className="rounded-full overflow-hidden bg-white shadow-2xl mb-5"
-                style={{ 
-                  width: '260px', 
-                  height: '260px',
-                  border: '10px solid white',
-                  boxShadow: '0 20px 40px -10px rgba(0, 0, 0, 0.3)',
-                }}
-              >
-                <img
-                  src={speaker2.headshotUrl}
-                  alt={speaker2.name}
-                  className="w-full h-full object-cover"
-                  crossOrigin="anonymous"
-                />
-              </div>
-            ) : (
-              <div 
-                className="rounded-full flex items-center justify-center text-white font-black bg-white/20 mb-5"
-                style={{ 
-                  width: '260px', 
-                  height: '260px',
-                  border: '10px solid white',
-                  fontSize: '80px',
-                }}
-              >
-                {speaker2.name ? speaker2.name.charAt(0).toUpperCase() : '?'}
-              </div>
-            )}
-            <p className="text-3xl font-bold text-white text-center mb-2" style={{ letterSpacing: '-0.01em' }}>
-              {speaker2.name || 'Speaker 2'}
-            </p>
-            <p className="text-lg text-white text-center mb-3" style={{ opacity: 0.95 }}>
-              {speaker2.title || 'Title & Company'}
-            </p>
-            {speaker2.companyLogoUrl && (
-              <img
-                src={speaker2.companyLogoUrl}
-                alt="Company logo"
-                className="h-10 object-contain"
-                style={{ maxWidth: '140px', filter: 'brightness(0) invert(1)' }}
-                crossOrigin="anonymous"
-              />
-            )}
-          </div>
+        {/* Company Logos */}
+        <div className="flex items-center gap-8">
+          {speaker1.companyLogoUrl && (
+            <img
+              src={speaker1.companyLogoUrl}
+              alt="Company logo"
+              className="h-14 object-contain"
+              style={{ maxWidth: '160px', filter: 'brightness(0) invert(1)' }}
+              crossOrigin="anonymous"
+            />
+          )}
+          {speaker2.companyLogoUrl && (
+            <img
+              src={speaker2.companyLogoUrl}
+              alt="Company logo"
+              className="h-14 object-contain"
+              style={{ maxWidth: '160px', filter: 'brightness(0) invert(1)' }}
+              crossOrigin="anonymous"
+            />
+          )}
         </div>
-
-        {/* Date & Time Section with Unicode Icons */}
-        {(date || time) && (
-          <div className="flex justify-center items-center gap-8 text-white text-xl">
-            {date && (
-              <div className="flex items-center gap-3">
-                <span className="text-2xl">📅</span>
-                <span className="font-medium">{formatDate(date)}</span>
-              </div>
-            )}
-            {time && (
-              <div className="flex items-center gap-3">
-                <span className="text-2xl">🕐</span>
-                <span className="font-medium">{formatTime(time, showTimezone ? timezone : undefined)}</span>
-              </div>
-            )}
-          </div>
-        )}
       </div>
     </div>
   );
