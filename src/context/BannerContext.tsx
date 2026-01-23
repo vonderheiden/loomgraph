@@ -21,7 +21,9 @@ const initialState: BannerState = {
   timezone: 'PT',
   showTimezone: true,
   template: 'professional',
-  accentColor: '#3B82F6', // Electric Blue
+  accentColor: '#a4d233', // Lime green
+  backgroundImageUrl: null,
+  backgroundImageFile: null,
 };
 
 // Context type

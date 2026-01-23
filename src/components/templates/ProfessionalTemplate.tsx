@@ -10,6 +10,7 @@ interface ProfessionalTemplateProps {
   timezone: 'PT' | 'ET' | 'GMT' | 'UTC' | 'CET';
   showTimezone: boolean;
   accentColor: string;
+  backgroundImageUrl?: string | null;
 }
 
 const ProfessionalTemplate: React.FC<ProfessionalTemplateProps> = ({
@@ -20,8 +21,12 @@ const ProfessionalTemplate: React.FC<ProfessionalTemplateProps> = ({
   timezone,
   showTimezone,
   accentColor,
+  backgroundImageUrl,
 }) => {
   const speaker = speakers[0] || { name: '', title: '', headshotUrl: null, companyLogoUrl: null };
+
+  // Default placeholder background (dark gradient)
+  const defaultBackground = 'linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%)';
 
   return (
     <div
@@ -29,148 +34,158 @@ const ProfessionalTemplate: React.FC<ProfessionalTemplateProps> = ({
       className="relative w-[1200px] h-[627px] overflow-hidden"
       style={{ fontFamily: 'Inter, sans-serif' }}
     >
-      {/* Top Section - Dark Background (80%) */}
+      {/* Top Section - Background Image with Dark Overlay (80%) */}
       <div className="absolute inset-0 h-[502px]">
-        {/* Dark filtered background */}
+        {/* Background Image or Gradient */}
+        {backgroundImageUrl ? (
+          <img
+            src={backgroundImageUrl}
+            alt="Background"
+            className="absolute inset-0 w-full h-full object-cover"
+            crossOrigin="anonymous"
+          />
+        ) : (
+          <div
+            className="absolute inset-0"
+            style={{ background: defaultBackground }}
+          />
+        )}
+
+        {/* Dark overlay for text readability */}
         <div
           className="absolute inset-0"
           style={{
-            background: 'linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%)',
-          }}
-        />
-        
-        {/* Subtle pattern overlay */}
-        <div
-          className="absolute inset-0 opacity-5"
-          style={{
-            backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)',
-            backgroundSize: '40px 40px',
+            background: 'linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.6) 100%)',
           }}
         />
 
         {/* Content */}
-        <div className="relative h-full flex items-center px-16 py-12">
-          {/* Left Side - Text Content */}
-          <div className="flex-1 pr-12">
+        <div className="relative h-full flex flex-col justify-between px-16 py-12">
+          {/* Top Section - Webinar Tag & Title */}
+          <div>
             {/* Webinar Tag */}
             <div
-              className="inline-block px-4 py-1.5 rounded-md mb-6 font-bold text-sm tracking-wide"
+              className="inline-block px-4 py-2 rounded-md mb-8 font-bold text-base tracking-wide"
               style={{
                 backgroundColor: accentColor,
-                color: 'white',
+                color: '#000000',
               }}
             >
-              WEBINAR
+              Webinar
             </div>
 
             {/* Title */}
             <h1
-              className="font-bold leading-tight text-white mb-6"
+              className="font-bold leading-tight text-white mb-8"
               style={{
-                fontSize: title.length > 60 ? '42px' : title.length > 40 ? '48px' : '56px',
+                fontSize: title.length > 80 ? '36px' : title.length > 50 ? '44px' : '52px',
                 fontWeight: 700,
-                lineHeight: 1.15,
+                lineHeight: 1.2,
                 letterSpacing: '-0.01em',
-                maxWidth: '650px',
+                maxWidth: '900px',
               }}
             >
               {title || 'Your Webinar Title Here'}
             </h1>
-
-            {/* Date & Time */}
-            <div className="flex items-center gap-6 mb-8">
-              {date && (
-                <div
-                  className="flex items-center gap-2 font-bold text-base"
-                  style={{ color: accentColor }}
-                >
-                  <span className="text-xl">📅</span>
-                  <span>{formatDate(date)}</span>
-                </div>
-              )}
-              {time && (
-                <div
-                  className="flex items-center gap-2 font-bold text-base"
-                  style={{ color: accentColor }}
-                >
-                  <span className="text-xl">🕐</span>
-                  <span>{formatTime(time, showTimezone ? timezone : undefined)}</span>
-                </div>
-              )}
-            </div>
-
-            {/* Speaker Info */}
-            <div className="space-y-2">
-              <p className="text-2xl font-bold text-white">
-                {speaker.name || 'Speaker Name'}
-              </p>
-              <p className="text-base text-gray-300">
-                {speaker.title || 'Title & Company'}
-              </p>
-            </div>
           </div>
 
-          {/* Right Side - Speaker Headshot */}
-          <div className="flex-shrink-0">
-            {speaker.headshotUrl ? (
-              <div
-                className="rounded-2xl overflow-hidden bg-white shadow-2xl"
-                style={{
-                  width: '320px',
-                  height: '320px',
-                  border: '6px solid rgba(255, 255, 255, 0.1)',
-                }}
-              >
-                <img
-                  src={speaker.headshotUrl}
-                  alt={speaker.name}
-                  className="w-full h-full object-cover"
-                  crossOrigin="anonymous"
-                />
+          {/* Bottom Section - Date/Time, Register Button, Speaker */}
+          <div className="flex items-end justify-between">
+            {/* Left Side - Date/Time & Speaker */}
+            <div className="flex items-end gap-12">
+              {/* Date & Time */}
+              <div className="space-y-1">
+                {date && (
+                  <div
+                    className="font-bold text-2xl"
+                    style={{ color: accentColor }}
+                  >
+                    {formatDate(date)}
+                  </div>
+                )}
+                {time && (
+                  <div
+                    className="font-bold text-2xl"
+                    style={{ color: accentColor }}
+                  >
+                    {formatTime(time, showTimezone ? timezone : undefined)}
+                  </div>
+                )}
               </div>
-            ) : (
-              <div
-                className="rounded-2xl flex items-center justify-center text-white font-black bg-white/10"
-                style={{
-                  width: '320px',
-                  height: '320px',
-                  border: '6px solid rgba(255, 255, 255, 0.1)',
-                  fontSize: '100px',
-                }}
-              >
-                {speaker.name ? speaker.name.charAt(0).toUpperCase() : '?'}
+
+              {/* Speaker Info */}
+              <div className="flex items-center gap-4">
+                {/* Headshot */}
+                {speaker.headshotUrl ? (
+                  <div
+                    className="rounded-full overflow-hidden bg-white shadow-lg flex-shrink-0"
+                    style={{
+                      width: '80px',
+                      height: '80px',
+                      border: '3px solid white',
+                    }}
+                  >
+                    <img
+                      src={speaker.headshotUrl}
+                      alt={speaker.name}
+                      className="w-full h-full object-cover"
+                      crossOrigin="anonymous"
+                    />
+                  </div>
+                ) : (
+                  <div
+                    className="rounded-full flex items-center justify-center text-white font-black bg-white/20 flex-shrink-0"
+                    style={{
+                      width: '80px',
+                      height: '80px',
+                      border: '3px solid white',
+                      fontSize: '32px',
+                    }}
+                  >
+                    {speaker.name ? speaker.name.charAt(0).toUpperCase() : '?'}
+                  </div>
+                )}
+
+                {/* Name & Title */}
+                <div>
+                  <p className="text-xl font-bold text-white leading-tight mb-1">
+                    {speaker.name || 'Speaker Name'}
+                  </p>
+                  <p className="text-sm text-white leading-tight">
+                    {speaker.title || 'Title & Company'}
+                  </p>
+                </div>
               </div>
-            )}
+            </div>
+
+            {/* Right Side - Register Button */}
+            <div
+              className="px-10 py-4 rounded-lg font-bold text-xl"
+              style={{
+                backgroundColor: accentColor,
+                color: '#000000',
+              }}
+            >
+              Register
+            </div>
           </div>
         </div>
       </div>
 
       {/* Bottom Section - Accent Color Footer (20%) */}
       <div
-        className="absolute bottom-0 left-0 right-0 h-[125px] flex items-center justify-between px-16"
+        className="absolute bottom-0 left-0 right-0 h-[125px] flex items-center justify-end px-16"
         style={{
           backgroundColor: accentColor,
         }}
       >
-        {/* Register Button */}
-        <div
-          className="px-10 py-4 rounded-lg font-bold text-lg"
-          style={{
-            backgroundColor: 'white',
-            color: accentColor,
-            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
-          }}
-        >
-          REGISTER NOW
-        </div>
-
         {/* Company Logo */}
         {speaker.companyLogoUrl && (
           <img
             src={speaker.companyLogoUrl}
             alt="Company logo"
             className="h-16 object-contain"
-            style={{ maxWidth: '200px', filter: 'brightness(0) invert(1)' }}
+            style={{ maxWidth: '300px' }}
             crossOrigin="anonymous"
           />
         )}

@@ -10,6 +10,7 @@ interface PanelTemplateProps {
   timezone: 'PT' | 'ET' | 'GMT' | 'UTC' | 'CET';
   showTimezone: boolean;
   accentColor: string;
+  backgroundImageUrl?: string | null;
 }
 
 const PanelTemplate: React.FC<PanelTemplateProps> = ({
@@ -20,20 +21,24 @@ const PanelTemplate: React.FC<PanelTemplateProps> = ({
   timezone,
   showTimezone,
   accentColor,
+  backgroundImageUrl,
 }) => {
   const speaker1 = speakers[0] || { name: '', title: '', headshotUrl: null, companyLogoUrl: null };
   const speaker2 = speakers[1] || { name: '', title: '', headshotUrl: null, companyLogoUrl: null };
   const speaker3 = speakers[2] || { name: '', title: '', headshotUrl: null, companyLogoUrl: null };
 
+  const defaultBackground = 'linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%)';
+
   const renderSpeaker = (speaker: Speaker, index: number) => (
-    <div key={index} className="flex flex-col items-center">
+    <div key={index} className="flex items-center gap-3">
+      {/* Headshot */}
       {speaker.headshotUrl ? (
         <div
-          className="rounded-2xl overflow-hidden bg-white shadow-xl mb-2"
+          className="rounded-full overflow-hidden bg-white shadow-lg flex-shrink-0"
           style={{
-            width: '160px',
-            height: '160px',
-            border: '4px solid rgba(255, 255, 255, 0.1)',
+            width: '70px',
+            height: '70px',
+            border: '3px solid white',
           }}
         >
           <img
@@ -45,23 +50,27 @@ const PanelTemplate: React.FC<PanelTemplateProps> = ({
         </div>
       ) : (
         <div
-          className="rounded-2xl flex items-center justify-center text-white font-black bg-white/10 mb-2"
+          className="rounded-full flex items-center justify-center text-white font-black bg-white/20 flex-shrink-0"
           style={{
-            width: '160px',
-            height: '160px',
-            border: '4px solid rgba(255, 255, 255, 0.1)',
-            fontSize: '50px',
+            width: '70px',
+            height: '70px',
+            border: '3px solid white',
+            fontSize: '28px',
           }}
         >
           {speaker.name ? speaker.name.charAt(0).toUpperCase() : '?'}
         </div>
       )}
-      <p className="text-base font-bold text-white text-center">
-        {speaker.name || `Speaker ${index + 1}`}
-      </p>
-      <p className="text-xs text-gray-300 text-center">
-        {speaker.title || 'Title & Company'}
-      </p>
+
+      {/* Name & Title */}
+      <div>
+        <p className="text-lg font-bold text-white leading-tight mb-1">
+          {speaker.name || `Speaker ${index + 1}`}
+        </p>
+        <p className="text-xs text-white leading-tight">
+          {speaker.title || 'Title & Company'}
+        </p>
+      </div>
     </div>
   );
 
@@ -71,22 +80,28 @@ const PanelTemplate: React.FC<PanelTemplateProps> = ({
       className="relative w-[1200px] h-[627px] overflow-hidden"
       style={{ fontFamily: 'Inter, sans-serif' }}
     >
-      {/* Top Section - Dark Background (80%) */}
+      {/* Top Section - Background Image with Dark Overlay (80%) */}
       <div className="absolute inset-0 h-[502px]">
-        {/* Dark filtered background */}
+        {/* Background Image or Gradient */}
+        {backgroundImageUrl ? (
+          <img
+            src={backgroundImageUrl}
+            alt="Background"
+            className="absolute inset-0 w-full h-full object-cover"
+            crossOrigin="anonymous"
+          />
+        ) : (
+          <div
+            className="absolute inset-0"
+            style={{ background: defaultBackground }}
+          />
+        )}
+
+        {/* Dark overlay */}
         <div
           className="absolute inset-0"
           style={{
-            background: 'linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%)',
-          }}
-        />
-
-        {/* Subtle pattern overlay */}
-        <div
-          className="absolute inset-0 opacity-5"
-          style={{
-            backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)',
-            backgroundSize: '40px 40px',
+            background: 'linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.6) 100%)',
           }}
         />
 
@@ -96,88 +111,91 @@ const PanelTemplate: React.FC<PanelTemplateProps> = ({
           <div>
             {/* Webinar Tag */}
             <div
-              className="inline-block px-4 py-1.5 rounded-md mb-6 font-bold text-sm tracking-wide"
+              className="inline-block px-4 py-2 rounded-md mb-8 font-bold text-base tracking-wide"
               style={{
                 backgroundColor: accentColor,
-                color: 'white',
+                color: '#000000',
               }}
             >
-              WEBINAR
+              Webinar
             </div>
 
             {/* Title */}
             <h1
-              className="font-bold leading-tight text-white mb-6"
+              className="font-bold leading-tight text-white mb-8"
               style={{
-                fontSize: title.length > 60 ? '38px' : title.length > 40 ? '44px' : '52px',
+                fontSize: title.length > 80 ? '32px' : title.length > 50 ? '40px' : '48px',
                 fontWeight: 700,
-                lineHeight: 1.15,
+                lineHeight: 1.2,
                 letterSpacing: '-0.01em',
                 maxWidth: '900px',
               }}
             >
               {title || 'Your Webinar Title Here'}
             </h1>
-
-            {/* Date & Time */}
-            <div className="flex items-center gap-6">
-              {date && (
-                <div
-                  className="flex items-center gap-2 font-bold text-base"
-                  style={{ color: accentColor }}
-                >
-                  <span className="text-xl">📅</span>
-                  <span>{formatDate(date)}</span>
-                </div>
-              )}
-              {time && (
-                <div
-                  className="flex items-center gap-2 font-bold text-base"
-                  style={{ color: accentColor }}
-                >
-                  <span className="text-xl">🕐</span>
-                  <span>{formatTime(time, showTimezone ? timezone : undefined)}</span>
-                </div>
-              )}
-            </div>
           </div>
 
-          {/* Bottom - Speakers */}
-          <div className="flex justify-center items-end gap-12">
-            {renderSpeaker(speaker1, 0)}
-            {renderSpeaker(speaker2, 1)}
-            {renderSpeaker(speaker3, 2)}
+          {/* Bottom - Date/Time, Register Button, Speakers */}
+          <div className="flex items-end justify-between">
+            {/* Left Side - Date/Time & Speakers */}
+            <div className="flex items-end gap-10">
+              {/* Date & Time */}
+              <div className="space-y-1">
+                {date && (
+                  <div
+                    className="font-bold text-2xl"
+                    style={{ color: accentColor }}
+                  >
+                    {formatDate(date)}
+                  </div>
+                )}
+                {time && (
+                  <div
+                    className="font-bold text-2xl"
+                    style={{ color: accentColor }}
+                  >
+                    {formatTime(time, showTimezone ? timezone : undefined)}
+                  </div>
+                )}
+              </div>
+
+              {/* Speakers */}
+              <div className="flex items-center gap-6">
+                {renderSpeaker(speaker1, 0)}
+                {renderSpeaker(speaker2, 1)}
+                {renderSpeaker(speaker3, 2)}
+              </div>
+            </div>
+
+            {/* Right Side - Register Button */}
+            <div
+              className="px-10 py-4 rounded-lg font-bold text-xl"
+              style={{
+                backgroundColor: accentColor,
+                color: '#000000',
+              }}
+            >
+              Register
+            </div>
           </div>
         </div>
       </div>
 
       {/* Bottom Section - Accent Color Footer (20%) */}
       <div
-        className="absolute bottom-0 left-0 right-0 h-[125px] flex items-center justify-between px-16"
+        className="absolute bottom-0 left-0 right-0 h-[125px] flex items-center justify-end px-16"
         style={{
           backgroundColor: accentColor,
         }}
       >
-        {/* Register Button */}
-        <div
-          className="px-10 py-4 rounded-lg font-bold text-lg"
-          style={{
-            backgroundColor: 'white',
-            color: accentColor,
-            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
-          }}
-        >
-          REGISTER NOW
-        </div>
-
         {/* Company Logos */}
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-10">
           {speaker1.companyLogoUrl && (
             <img
               src={speaker1.companyLogoUrl}
               alt="Company logo"
               className="h-12 object-contain"
-              style={{ maxWidth: '140px', filter: 'brightness(0) invert(1)' }}
+              style={{ maxWidth: '160px' }}
               crossOrigin="anonymous"
             />
           )}
@@ -186,7 +204,7 @@ const PanelTemplate: React.FC<PanelTemplateProps> = ({
               src={speaker2.companyLogoUrl}
               alt="Company logo"
               className="h-12 object-contain"
-              style={{ maxWidth: '140px', filter: 'brightness(0) invert(1)' }}
+              style={{ maxWidth: '160px' }}
               crossOrigin="anonymous"
             />
           )}
@@ -195,7 +213,7 @@ const PanelTemplate: React.FC<PanelTemplateProps> = ({
               src={speaker3.companyLogoUrl}
               alt="Company logo"
               className="h-12 object-contain"
-              style={{ maxWidth: '140px', filter: 'brightness(0) invert(1)' }}
+              style={{ maxWidth: '160px' }}
               crossOrigin="anonymous"
             />
           )}
