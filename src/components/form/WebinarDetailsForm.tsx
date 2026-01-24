@@ -4,7 +4,7 @@ import { FileText, ChevronDown, ChevronUp } from 'lucide-react';
 
 const WebinarDetailsForm: React.FC = () => {
   const { state, updateField } = useBannerState();
-  const [isExpanded, setIsExpanded] = useState(true);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   const titleMaxLength = 100;
 
@@ -14,7 +14,7 @@ const WebinarDetailsForm: React.FC = () => {
       <button
         type="button"
         onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full flex items-center justify-between p-4 lg:p-6 hover:bg-gray-50 transition-colors min-h-[44px]"
+        className="w-full flex items-center justify-between p-3 lg:p-4 hover:bg-gray-50 transition-colors min-h-[44px]"
         aria-expanded={isExpanded}
         aria-label="Toggle webinar details section"
       >
