@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Download, Check, AlertCircle } from 'lucide-react';
-import { toPng } from 'html-to-image';
+import html2canvas from 'html2canvas';
 import { useBannerState } from '../../context/BannerContext';
 import { generateFileName, downloadBlob } from '../../utils/exportHelpers';
 
@@ -43,30 +43,30 @@ const ExportButton: React.FC = () => {
       );
 
       // Additional wait for fonts and rendering
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise(resolve => setTimeout(resolve, 1000));
 
-      // Convert to PNG with robust settings
-      const dataUrl = await toPng(element, {
-        quality: 1.0,
-        pixelRatio: 2,
+      // Use html2canvas for more reliable conversion
+      const canvas = await html2canvas(element, {
+        scale: 2, // 2x resolution for high quality
         width: 1200,
         height: 627,
-        cacheBust: true,
-        skipFonts: false,
-        style: {
-          transform: 'scale(1)',
-          transformOrigin: 'top left',
-        },
+        useCORS: true, // Enable CORS for external images
+        allowTaint: false,
+        backgroundColor: null,
+        logging: false,
+        imageTimeout: 15000, // 15 second timeout for images
       });
 
-      // Verify data URL is valid
-      if (!dataUrl || dataUrl === 'data:,') {
-        throw new Error('Generated image is empty');
-      }
-
-      // Convert data URL to blob
-      const response = await fetch(dataUrl);
-      const blob = await response.blob();
+      // Convert canvas to blob
+      const blob = await new Promise<Blob>((resolve, reject) => {
+        canvas.toBlob((blob) => {
+          if (blob) {
+            resolve(blob);
+          } else {
+            reject(new Error('Failed to create blob from canvas'));
+          }
+        }, 'image/png', 1.0);
+      });
 
       // Verify blob is valid
       if (blob.size === 0) {
@@ -88,11 +88,13 @@ const ExportButton: React.FC = () => {
       // More helpful error message
       let userMessage = 'Failed to export banner.\n\n';
       if (errorMessage.includes('tainted') || errorMessage.includes('CORS')) {
-        userMessage += 'Image CORS error. Try using different images or wait for them to fully load.';
+        userMessage += 'Image CORS error. Try refreshing the page and uploading your images again.';
       } else if (errorMessage.includes('empty') || errorMessage.includes('no data')) {
         userMessage += 'Generated image is empty. Please ensure all content is visible.';
+      } else if (errorMessage.includes('timeout')) {
+        userMessage += 'Image loading timed out. Please try again.';
       } else {
-        userMessage += `Error: ${errorMessage}\n\nTry:\n1. Wait a few seconds for images to load\n2. Scroll to make sure the preview is visible\n3. Try again`;
+        userMessage += `Error: ${errorMessage}\n\nTry:\n1. Refresh the page\n2. Re-upload your images\n3. Wait a few seconds and try again`;
       }
       
       alert(userMessage);
