@@ -103,14 +103,14 @@ const ProfessionalTemplate: React.FC<ProfessionalTemplateProps> = ({
         >
           {/* Top Section - Webinar Tag, Title, Date/Time & Register */}
           <div style={{ maxWidth: isPortrait ? '100%' : isSquare ? '90%' : '70%' }}>
-            {/* Webinar Tag */}
+            {/* Webinar Tag - Increased by 30% */}
             <div
               className="inline-block rounded-bento font-bold tracking-wide"
               style={{
                 backgroundColor: accentColor,
                 color: '#000000',
-                padding: `${8 * scaleFactor}px ${16 * scaleFactor}px`,
-                fontSize: `${16 * scaleFactor}px`,
+                padding: `${10 * scaleFactor}px ${20 * scaleFactor}px`,
+                fontSize: `${20 * scaleFactor}px`,
                 marginBottom: `${isPortrait ? 24 : 32}px`,
               }}
             >
@@ -170,14 +170,14 @@ const ProfessionalTemplate: React.FC<ProfessionalTemplateProps> = ({
                 </div>
               )}
 
-              {/* Register Button */}
+              {/* Register Button - Increased by 30% */}
               <div
                 className="rounded-bento font-bold"
                 style={{
                   backgroundColor: accentColor,
                   color: '#000000',
-                  padding: `${10 * scaleFactor}px ${28 * scaleFactor}px`,
-                  fontSize: `${16 * scaleFactor}px`,
+                  padding: `${13 * scaleFactor}px ${36 * scaleFactor}px`,
+                  fontSize: `${20 * scaleFactor}px`,
                 }}
               >
                 Register

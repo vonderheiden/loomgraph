@@ -10,7 +10,7 @@ import DimensionSelector from './form/DimensionSelector';
 
 const FormPanel: React.FC = () => {
   const { state, updateSpeaker } = useBannerState();
-  const [expandedSpeaker, setExpandedSpeaker] = useState<number>(0); // Track which speaker is expanded
+  const [expandedSpeaker, setExpandedSpeaker] = useState<number>(-1); // Track which speaker is expanded (-1 = none)
 
   return (
     <div className="w-full lg:w-[35%] bg-white border-r border-bento-border flex flex-col" data-testid="form-panel">
