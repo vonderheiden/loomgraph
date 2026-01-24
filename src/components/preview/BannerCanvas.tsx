@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useBannerState } from '../../context/BannerContext';
 import ProfessionalTemplate from '../templates/ProfessionalTemplate';
 import DuoTemplate from '../templates/DuoTemplate';
@@ -7,6 +7,8 @@ import PanelTemplate from '../templates/PanelTemplate';
 const BannerCanvas: React.FC = () => {
   const { state } = useBannerState();
   const [isRendering, setIsRendering] = useState(false);
+  const [scaleFactor, setScaleFactor] = useState(1);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   // Debounce rendering for text inputs
   useEffect(() => {
@@ -17,6 +19,39 @@ const BannerCanvas: React.FC = () => {
 
     return () => clearTimeout(timer);
   }, [state.title, state.speakers]);
+
+  // Calculate responsive scale factor based on available container space
+  useEffect(() => {
+    const calculateScale = () => {
+      if (!containerRef.current) return;
+
+      // Get the parent container dimensions (LinkedInStage)
+      const parent = containerRef.current.parentElement;
+      if (!parent) return;
+
+      // Account for padding in LinkedInStage (p-4 = 16px on each side)
+      const padding = 32; // 16px * 2
+      const availableWidth = parent.clientWidth - padding;
+      const availableHeight = parent.clientHeight - padding;
+
+      // Calculate scale factors for both dimensions
+      const scaleX = availableWidth / state.dimension.width;
+      const scaleY = availableHeight / state.dimension.height;
+
+      // Use the smaller scale factor to ensure the banner fits in both dimensions
+      // Apply 0.9 multiplier to leave 10% margin for comfortable viewing
+      const newScale = Math.min(scaleX, scaleY) * 0.9;
+
+      setScaleFactor(newScale);
+    };
+
+    // Calculate on mount and dimension change
+    calculateScale();
+
+    // Recalculate on window resize
+    window.addEventListener('resize', calculateScale);
+    return () => window.removeEventListener('resize', calculateScale);
+  }, [state.dimension]);
 
   // Template factory - select template based on speaker count
   const renderTemplate = () => {
@@ -44,20 +79,15 @@ const BannerCanvas: React.FC = () => {
     }
   };
 
-  // Calculate scale factor to fit preview in viewport
-  // Assuming max preview width of ~700px
-  const maxPreviewWidth = 700;
-  const scaleFactor = Math.min(maxPreviewWidth / state.dimension.width, 1);
-
   return (
-    <div className="relative">
+    <div ref={containerRef} className="relative">
       {isRendering && (
         <div className="absolute inset-0 bg-white/50 flex items-center justify-center z-10">
           <div className="text-sm text-gray-600">Updating...</div>
         </div>
       )}
       
-      {/* Render template at actual size, then scale down for preview */}
+      {/* Render template at actual size, then scale to fit container */}
       <div 
         className="transform-gpu" 
         style={{ 
