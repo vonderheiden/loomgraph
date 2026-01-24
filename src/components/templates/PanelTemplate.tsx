@@ -36,16 +36,23 @@ const PanelTemplate: React.FC<PanelTemplateProps> = ({
   const isColorBackground = background?.type === 'color';
   const backgroundValue = customBackgroundUrl || background?.value || '#1a1a1a';
 
+  // Calculate scale factor based on dimension
+  const scaleFactor = dimension.label === 'portrait' ? 1.4 : dimension.label === 'square' ? 1.2 : 1;
+  
+  // Calculate responsive heights (80% top, 20% bottom)
+  const topHeight = dimension.height * 0.8;
+  const bottomHeight = dimension.height * 0.2;
+
   const renderSpeaker = (speaker: Speaker, index: number) => (
-    <div key={index} className="flex items-center gap-3">
+    <div key={index} className="flex items-center" style={{ gap: `${12 * scaleFactor}px` }}>
       {/* Headshot */}
       {speaker.headshotUrl ? (
         <div
           className="rounded-full overflow-hidden bg-white shadow-lg flex-shrink-0"
           style={{
-            width: '70px',
-            height: '70px',
-            border: '3px solid white',
+            width: `${70 * scaleFactor}px`,
+            height: `${70 * scaleFactor}px`,
+            border: `${3 * scaleFactor}px solid white`,
           }}
         >
           <img
@@ -59,10 +66,10 @@ const PanelTemplate: React.FC<PanelTemplateProps> = ({
         <div
           className="rounded-full flex items-center justify-center text-white font-black bg-white/20 flex-shrink-0"
           style={{
-            width: '70px',
-            height: '70px',
-            border: '3px solid white',
-            fontSize: '28px',
+            width: `${70 * scaleFactor}px`,
+            height: `${70 * scaleFactor}px`,
+            border: `${3 * scaleFactor}px solid white`,
+            fontSize: `${28 * scaleFactor}px`,
           }}
         >
           {speaker.name ? speaker.name.charAt(0).toUpperCase() : '?'}
@@ -71,10 +78,10 @@ const PanelTemplate: React.FC<PanelTemplateProps> = ({
 
       {/* Name & Title */}
       <div>
-        <p className="text-lg font-bold text-white leading-tight mb-1">
+        <p className="font-bold text-white leading-tight" style={{ fontSize: `${18 * scaleFactor}px`, marginBottom: `${4 * scaleFactor}px` }}>
           {speaker.name || `Speaker ${index + 1}`}
         </p>
-        <p className="text-xs text-white leading-tight">
+        <p className="text-white leading-tight" style={{ fontSize: `${12 * scaleFactor}px` }}>
           {speaker.title || 'Title & Company'}
         </p>
       </div>
@@ -92,7 +99,7 @@ const PanelTemplate: React.FC<PanelTemplateProps> = ({
       }}
     >
       {/* Top Section - Background with Dark Overlay (80%) */}
-      <div className="absolute inset-0 h-[502px]">
+      <div className="absolute inset-0" style={{ height: `${topHeight}px` }}>
         {/* Background - Color or Image */}
         {isColorBackground ? (
           <div
@@ -117,7 +124,7 @@ const PanelTemplate: React.FC<PanelTemplateProps> = ({
         />
 
         {/* Content */}
-        <div className="relative h-full flex flex-col justify-between px-16 py-12">
+        <div className="relative h-full flex flex-col justify-between" style={{ padding: `${48 * scaleFactor}px ${64 * scaleFactor}px` }}>
           {/* Top - Webinar Tag, Title, Date/Time & Register */}
           <div>
             {/* Webinar Tag */}
@@ -196,9 +203,11 @@ const PanelTemplate: React.FC<PanelTemplateProps> = ({
 
       {/* Bottom Section - Accent Color Footer (20%) */}
       <div
-        className="absolute bottom-0 left-0 right-0 h-[125px] flex items-center justify-end px-16"
+        className="absolute bottom-0 left-0 right-0 flex items-center justify-end"
         style={{
           backgroundColor: accentColor,
+          height: `${bottomHeight}px`,
+          padding: `0 ${64 * scaleFactor}px`,
         }}
       >
         {/* Company Logos */}

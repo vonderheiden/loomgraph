@@ -14,22 +14,10 @@ const PreviewPanel: React.FC = () => {
       {/* Sticky content - preview stays in view */}
       <div className="sticky top-[73px] flex-1 overflow-y-auto p-6" style={{ height: 'calc(100vh - 73px)' }}>
         <div className="max-w-5xl mx-auto space-y-4">
-          {/* Preview Container - Larger scale */}
+          {/* Preview Container - Centered and responsive */}
           <div className="bg-white rounded-lg shadow-lg p-6">
-            <div className="relative overflow-hidden rounded-lg border border-gray-200">
-              {/* Scale down the 1200x627 banner to fit preview - using 0.7 scale for 60% width */}
-              <div className="w-full" style={{ aspectRatio: '1200/627' }}>
-                <div
-                  className="origin-top-left"
-                  style={{
-                    transform: 'scale(0.7)',
-                    width: '1200px',
-                    height: '627px',
-                  }}
-                >
-                  <BannerCanvas />
-                </div>
-              </div>
+            <div className="flex items-center justify-center min-h-[400px]">
+              <BannerCanvas />
             </div>
           </div>
 
