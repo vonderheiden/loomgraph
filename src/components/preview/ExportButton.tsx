@@ -22,8 +22,20 @@ const ExportButton: React.FC = () => {
         throw new Error('Banner template not found');
       }
 
+      // Get the parent container that has the transform scale
+      const scaledContainer = element.closest('[style*="transform"]') as HTMLElement;
+      const originalTransform = scaledContainer?.style.transform || '';
+      
+      // Temporarily remove the scale transform to capture at full size
+      if (scaledContainer) {
+        scaledContainer.style.transform = 'scale(1)';
+      }
+
       // Ensure element is visible and in viewport
       element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      
+      // Wait for fonts to load - critical for text rendering
+      await document.fonts.ready;
       
       // Wait for images to load - check all img elements
       const images = element.querySelectorAll('img');
@@ -36,18 +48,18 @@ const ExportButton: React.FC = () => {
               console.warn('Image failed to load:', img.src);
               resolve(); // Continue even if image fails
             };
-            // Timeout after 5 seconds
-            setTimeout(() => resolve(), 5000);
+            // Timeout after 10 seconds
+            setTimeout(() => resolve(), 10000);
           });
         })
       );
 
-      // Additional wait for fonts and rendering
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Additional wait for complete rendering
+      await new Promise(resolve => setTimeout(resolve, 1500));
 
-      // Use html2canvas for more reliable conversion
+      // Use html2canvas for reliable conversion at exact dimensions
       const canvas = await html2canvas(element, {
-        scale: 2, // 2x resolution for high quality
+        scale: 2, // 2x resolution for high quality (2400x1254)
         width: 1200,
         height: 627,
         useCORS: true, // Enable CORS for external images
@@ -55,7 +67,19 @@ const ExportButton: React.FC = () => {
         backgroundColor: null,
         logging: false,
         imageTimeout: 15000, // 15 second timeout for images
+        onclone: (clonedDoc) => {
+          // Ensure fonts are applied in the cloned document
+          const clonedElement = clonedDoc.getElementById('banner-template');
+          if (clonedElement) {
+            clonedElement.style.fontFamily = 'Inter, sans-serif';
+          }
+        },
       });
+
+      // Restore the original transform
+      if (scaledContainer) {
+        scaledContainer.style.transform = originalTransform;
+      }
 
       // Convert canvas to blob
       const blob = await new Promise<Blob>((resolve, reject) => {
