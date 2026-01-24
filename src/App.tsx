@@ -2,6 +2,8 @@ import { useState, useCallback } from 'react';
 import { BannerProvider } from './context/BannerContext';
 import FormPanel from './components/FormPanel';
 import PreviewPanel from './components/preview/PreviewPanel';
+import MobilePreview from './components/preview/MobilePreview';
+import FloatingActionButton from './components/preview/FloatingActionButton';
 import { LandingPage } from './components/landing/LandingPage';
 import type { ViewType } from './types/landing.types';
 
@@ -39,14 +41,20 @@ function App() {
       {currentView === 'generator' && (
         <BannerProvider>
           <div className="min-h-screen bg-bento-bg">
-            {/* Two-column layout: 40% form, 60% preview */}
-            <div className="flex flex-col lg:flex-row min-h-screen">
-              {/* Left Column: Form (40%) */}
+            {/* Two-column layout: 35% form, 65% preview */}
+            <div className="flex flex-col lg:flex-row min-h-screen" data-testid="generator-layout">
+              {/* Mobile Preview - Only visible on mobile (<768px) */}
+              <MobilePreview />
+
+              {/* Left Column: Form (35%) */}
               <FormPanel />
 
-              {/* Right Column: Preview (60%) */}
+              {/* Right Column: Preview (65%) */}
               <PreviewPanel />
             </div>
+
+            {/* Floating Action Button - Only visible on mobile (<768px) */}
+            <FloatingActionButton />
           </div>
         </BannerProvider>
       )}

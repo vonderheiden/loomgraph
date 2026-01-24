@@ -12,7 +12,7 @@ const ColorPicker: React.FC = () => {
   ];
 
   return (
-    <div className="bg-bento-card border border-bento-border rounded-bento shadow-soft p-6">
+    <div className="bg-bento-card border border-bento-border rounded-bento shadow-soft p-4 lg:p-6">
       <h2 className="text-lg font-semibold mb-4">Brand Color</h2>
 
       {/* Color Input */}
@@ -20,13 +20,13 @@ const ColorPicker: React.FC = () => {
         <label htmlFor="accentColor" className="block text-sm font-medium text-gray-700 mb-2">
           Accent Color
         </label>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-4">
           <input
             type="color"
             id="accentColor"
             value={state.accentColor}
             onChange={(e) => updateField('accentColor', e.target.value)}
-            className="w-16 h-16 rounded-lg border-2 border-bento-border cursor-pointer"
+            className="w-16 h-16 rounded-bento border border-bento-border cursor-pointer"
           />
           <div className="flex-1">
             <input
@@ -34,7 +34,10 @@ const ColorPicker: React.FC = () => {
               value={state.accentColor}
               onChange={(e) => updateField('accentColor', e.target.value)}
               placeholder="#3B82F6"
-              className="w-full px-3 py-2 border border-bento-border rounded-lg focus:border-action-primary focus:ring-2 focus:ring-action-primary/20 outline-none transition-colors font-mono text-sm"
+              className="w-full px-3 py-3 lg:py-2 border border-bento-border rounded-bento outline-none transition-colors font-mono text-sm focus:border-[var(--accent-color)] focus:ring-2 min-h-[44px]"
+              style={{
+                '--tw-ring-color': 'color-mix(in srgb, var(--accent-color) 20%, transparent)',
+              } as React.CSSProperties}
             />
           </div>
         </div>
@@ -45,19 +48,20 @@ const ColorPicker: React.FC = () => {
         <label className="block text-sm font-medium text-gray-700 mb-2">
           Preset Colors
         </label>
-        <div className="grid grid-cols-4 gap-2">
+        <div className="grid grid-cols-4 gap-2" role="group" aria-label="Preset color options">
           {presetColors.map((color) => (
             <button
               key={color.value}
               onClick={() => updateField('accentColor', color.value)}
-              className={`h-12 rounded-lg border-2 transition-all ${
+              className={`min-h-[48px] rounded-bento border transition-all ${
                 state.accentColor.toLowerCase() === color.value.toLowerCase()
-                  ? 'border-gray-900 scale-105'
-                  : 'border-bento-border hover:border-gray-400'
+                  ? 'border-gray-900 scale-105 border-2'
+                  : 'border-bento-border hover:border-action-primary'
               }`}
               style={{ backgroundColor: color.value }}
               title={color.name}
-              aria-label={color.name}
+              aria-label={`Select ${color.name} color`}
+              aria-pressed={state.accentColor.toLowerCase() === color.value.toLowerCase()}
             />
           ))}
         </div>

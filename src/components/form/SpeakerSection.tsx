@@ -58,16 +58,27 @@ const SpeakerSection: React.FC<SpeakerSectionProps> = ({
     onUpdate({ companyLogoFile: file, companyLogoUrl: url });
   };
 
+  // Keyboard navigation: Escape key to close accordion
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Escape' && isExpanded) {
+      e.preventDefault();
+      onToggle();
+    }
+  };
+
   return (
     <div className="bg-bento-card border border-bento-border rounded-bento shadow-soft overflow-hidden">
       {/* Collapsible Header */}
       <button
         type="button"
         onClick={onToggle}
-        className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors"
+        onKeyDown={handleKeyDown}
+        className="w-full flex items-center justify-between p-4 lg:p-4 hover:bg-gray-50 transition-colors min-h-[44px]"
+        aria-expanded={isExpanded}
+        aria-label={`Toggle speaker ${speakerIndex + 1} details`}
       >
-        <div className="flex items-center gap-3">
-          <User className="w-5 h-5 text-gray-700" />
+        <div className="flex items-center gap-4">
+          <User className="w-5 h-5 text-gray-700" aria-hidden="true" />
           <div className="text-left">
             <h3 className="text-lg font-semibold">Speaker {speakerIndex + 1}</h3>
             {!isExpanded && speaker.name && (
@@ -76,57 +87,66 @@ const SpeakerSection: React.FC<SpeakerSectionProps> = ({
           </div>
         </div>
         {isExpanded ? (
-          <ChevronUp className="w-5 h-5 text-gray-500" />
+          <ChevronUp className="w-5 h-5 text-gray-500" aria-hidden="true" />
         ) : (
-          <ChevronDown className="w-5 h-5 text-gray-500" />
+          <ChevronDown className="w-5 h-5 text-gray-500" aria-hidden="true" />
         )}
       </button>
 
       {/* Collapsible Content */}
       {isExpanded && (
-        <div className="px-6 pb-6 space-y-4 border-t border-gray-100">
-        {/* Speaker Name */}
-        <div>
-          <label
-            htmlFor={`speaker-name-${speakerIndex}`}
-            className="block text-sm font-medium text-gray-700 mb-1"
-          >
-            Speaker Name *
-          </label>
-          <input
-            type="text"
-            id={`speaker-name-${speakerIndex}`}
-            value={speaker.name}
-            onChange={(e) => onUpdate({ name: e.target.value })}
-            maxLength={nameMaxLength}
-            placeholder="e.g., Jane Smith"
-            className="w-full px-3 py-2 border border-bento-border rounded-lg focus:border-action-primary focus:ring-2 focus:ring-action-primary/20 outline-none transition-colors"
-          />
-          <span className="text-xs text-gray-500 mt-1 block text-right">
-            {speaker.name.length}/{nameMaxLength}
-          </span>
-        </div>
+        <div className="px-4 pb-4 lg:px-6 lg:pb-6 space-y-4 border-t border-bento-border">
+        {/* Speaker Name and Title - Single Row on Desktop */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          {/* Speaker Name */}
+          <div>
+            <label
+              htmlFor={`speaker-name-${speakerIndex}`}
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
+              Speaker Name *
+            </label>
+            <input
+              type="text"
+              id={`speaker-name-${speakerIndex}`}
+              value={speaker.name}
+              onChange={(e) => onUpdate({ name: e.target.value })}
+              maxLength={nameMaxLength}
+              placeholder="e.g., Jane Smith"
+              className="w-full px-3 py-3 lg:py-2 border border-bento-border rounded-bento outline-none transition-colors focus:border-[var(--accent-color)] focus:ring-2 min-h-[44px]"
+              style={{
+                '--tw-ring-color': 'color-mix(in srgb, var(--accent-color) 20%, transparent)',
+              } as React.CSSProperties}
+            />
+            <span className="text-xs text-gray-500 mt-1 block text-right">
+              {speaker.name.length}/{nameMaxLength}
+            </span>
+          </div>
 
-        {/* Speaker Title */}
-        <div>
-          <label
-            htmlFor={`speaker-title-${speakerIndex}`}
-            className="block text-sm font-medium text-gray-700 mb-1"
-          >
-            Speaker Title/Company *
-          </label>
-          <input
-            type="text"
-            id={`speaker-title-${speakerIndex}`}
-            value={speaker.title}
-            onChange={(e) => onUpdate({ title: e.target.value })}
-            maxLength={titleMaxLength}
-            placeholder="e.g., CEO at TechCorp"
-            className="w-full px-3 py-2 border border-bento-border rounded-lg focus:border-action-primary focus:ring-2 focus:ring-action-primary/20 outline-none transition-colors"
-          />
-          <span className="text-xs text-gray-500 mt-1 block text-right">
-            {speaker.title.length}/{titleMaxLength}
-          </span>
+          {/* Speaker Title */}
+          <div>
+            <label
+              htmlFor={`speaker-title-${speakerIndex}`}
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
+              Speaker Title/Company *
+            </label>
+            <input
+              type="text"
+              id={`speaker-title-${speakerIndex}`}
+              value={speaker.title}
+              onChange={(e) => onUpdate({ title: e.target.value })}
+              maxLength={titleMaxLength}
+              placeholder="e.g., CEO at TechCorp"
+              className="w-full px-3 py-3 lg:py-2 border border-bento-border rounded-bento outline-none transition-colors focus:border-[var(--accent-color)] focus:ring-2 min-h-[44px]"
+              style={{
+                '--tw-ring-color': 'color-mix(in srgb, var(--accent-color) 20%, transparent)',
+              } as React.CSSProperties}
+            />
+            <span className="text-xs text-gray-500 mt-1 block text-right">
+              {speaker.title.length}/{titleMaxLength}
+            </span>
+          </div>
         </div>
 
         {/* Headshot and Company Logo - Side by Side */}
@@ -150,9 +170,10 @@ const SpeakerSection: React.FC<SpeakerSectionProps> = ({
               <button
                 type="button"
                 onClick={handleHeadshotClick}
-                className="w-full h-32 border-2 border-dashed border-bento-border rounded-lg hover:border-action-primary hover:bg-gray-50 transition-colors flex flex-col items-center justify-center gap-2 text-gray-600"
+                className="w-full min-h-[128px] p-4 border-2 border-dashed border-bento-border rounded-bento hover:border-action-primary hover:bg-gray-50 transition-colors flex flex-col items-center justify-center gap-2 text-gray-600"
+                aria-label={`Upload headshot for speaker ${speakerIndex + 1}`}
               >
-                <Upload className="w-8 h-8" />
+                <Upload className="w-8 h-8" aria-hidden="true" />
                 <span className="text-sm">Upload Headshot</span>
                 <span className="text-xs text-gray-500">PNG or JPG, max 5MB</span>
               </button>
@@ -168,10 +189,10 @@ const SpeakerSection: React.FC<SpeakerSectionProps> = ({
                 <button
                   type="button"
                   onClick={handleHeadshotRemove}
-                  className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors shadow-md"
+                  className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-2 hover:bg-red-600 transition-colors shadow-md min-w-[44px] min-h-[44px] flex items-center justify-center"
                   aria-label="Remove headshot"
                 >
-                  <X className="w-4 h-4" />
+                  <X className="w-5 h-5" aria-hidden="true" />
                 </button>
               </div>
             )}

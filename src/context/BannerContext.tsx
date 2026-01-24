@@ -1,5 +1,6 @@
-import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useCallback, useEffect, ReactNode } from 'react';
 import { BannerState, Speaker, BANNER_DIMENSIONS } from '../types/banner.types';
+import { updateAccentColorVariable } from '../utils/colorHelpers';
 
 // Helper to create empty speaker
 function createEmptySpeaker(): Speaker {
@@ -47,6 +48,11 @@ const BannerContext = createContext<BannerContextType | undefined>(undefined);
 export const BannerProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [state, setState] = useState<BannerState>(initialState);
 
+  // Update CSS custom property when accent color changes
+  useEffect(() => {
+    updateAccentColorVariable(state.accentColor);
+  }, [state.accentColor]);
+
   // Update a single field
   const updateField = useCallback(<K extends keyof BannerState>(
     field: K,
@@ -92,8 +98,17 @@ export const BannerProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     });
   }, []);
 
-  // Update dimension
+  // Update dimension with validation
   const updateDimension = useCallback((dimension: BannerState['dimension']) => {
+    // Validate dimension object has required fields
+    if (!dimension || typeof dimension.width !== 'number' || typeof dimension.height !== 'number' || !dimension.label) {
+      console.error('Invalid dimension object:', dimension);
+      console.warn('Resetting to default landscape dimension');
+      // Reset to default landscape dimension
+      setState((prev) => ({ ...prev, dimension: BANNER_DIMENSIONS.landscape }));
+      return;
+    }
+    
     setState((prev) => ({ ...prev, dimension }));
   }, []);
 

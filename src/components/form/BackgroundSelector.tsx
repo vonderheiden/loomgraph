@@ -18,7 +18,7 @@ const BackgroundSelector: React.FC = () => {
       </label>
 
       {/* Grid of background options */}
-      <div className="grid grid-cols-4 gap-3">
+      <div className="grid grid-cols-4 gap-4" role="group" aria-label="Background options">
         {BACKGROUND_OPTIONS.map((bg) => {
           const isSelected = state.backgroundId === bg.id;
           
@@ -28,13 +28,19 @@ const BackgroundSelector: React.FC = () => {
               type="button"
               onClick={() => handleBackgroundChange(bg.id)}
               className={`
-                relative h-20 rounded-lg border-2 transition-all overflow-hidden
+                relative min-h-[80px] rounded-bento border transition-all overflow-hidden
+                focus:outline-none focus:ring-2 focus:ring-offset-2
                 ${isSelected 
-                  ? 'border-action-primary ring-2 ring-action-primary ring-offset-2' 
-                  : 'border-gray-200 hover:border-gray-300'
+                  ? 'border-action-primary ring-2 ring-action-primary ring-offset-2 border-2' 
+                  : 'border-bento-border hover:border-action-primary'
                 }
               `}
+              style={{
+                '--tw-ring-color': 'var(--accent-color)',
+              } as React.CSSProperties}
               title={bg.name}
+              aria-label={`Select ${bg.name} background`}
+              aria-pressed={isSelected}
             >
               {/* Background preview */}
               {bg.type === 'color' ? (
@@ -84,7 +90,7 @@ const BackgroundSelector: React.FC = () => {
       </p>
 
       {/* Info text */}
-      <p className="text-xs text-gray-400 italic">
+      <p className="text-xs text-gray-500 italic">
         Choose a solid color or preset image for your banner background
       </p>
     </div>

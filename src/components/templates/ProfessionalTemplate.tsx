@@ -35,12 +35,28 @@ const ProfessionalTemplate: React.FC<ProfessionalTemplateProps> = ({
   const isColorBackground = background?.type === 'color';
   const backgroundValue = customBackgroundUrl || background?.value || '#1a1a1a';
 
-  // Calculate scale factor based on dimension
-  const scaleFactor = dimension.label === 'portrait' ? 1.4 : dimension.label === 'square' ? 1.2 : 1;
+  // Calculate dimension-specific layout parameters
+  const isSquare = dimension.label === 'square';
+  const isPortrait = dimension.label === 'portrait';
+
+  // Scale factors for different dimensions
+  const scaleFactor = isPortrait ? 1.0 : isSquare ? 0.95 : 0.85;
   
-  // Calculate responsive heights (80% top, 20% bottom)
-  const topHeight = dimension.height * 0.8;
-  const bottomHeight = dimension.height * 0.2;
+  // Calculate responsive heights (75% top, 25% bottom for better balance)
+  const topHeight = dimension.height * 0.75;
+  const bottomHeight = dimension.height * 0.25;
+
+  // Dimension-specific padding
+  const horizontalPadding = isPortrait ? 40 : isSquare ? 48 : 64;
+  const verticalPadding = isPortrait ? 56 : isSquare ? 48 : 48;
+
+  // Font sizes adjusted for dimension
+  const getTitleFontSize = () => {
+    const baseSize = title.length > 80 ? 36 : title.length > 50 ? 44 : 52;
+    if (isPortrait) return baseSize * 1.1;
+    if (isSquare) return baseSize * 1.0;
+    return baseSize * 0.9;
+  };
 
   return (
     <div
@@ -52,7 +68,7 @@ const ProfessionalTemplate: React.FC<ProfessionalTemplateProps> = ({
         height: `${dimension.height}px`,
       }}
     >
-      {/* Top Section - Background with Dark Overlay (80%) */}
+      {/* Top Section - Background with Dark Overlay */}
       <div className="absolute inset-0" style={{ height: `${topHeight}px` }}>
         {/* Background - Color or Image */}
         {isColorBackground ? (
@@ -77,19 +93,22 @@ const ProfessionalTemplate: React.FC<ProfessionalTemplateProps> = ({
           }}
         />
 
-        {/* Content */}
-        <div className="relative h-full flex flex-col justify-between" style={{ padding: `${48 * scaleFactor}px ${64 * scaleFactor}px` }}>
+        {/* Content - Layout varies by dimension */}
+        <div 
+          className="relative h-full flex flex-col justify-between" 
+          style={{ padding: `${verticalPadding}px ${horizontalPadding}px` }}
+        >
           {/* Top Section - Webinar Tag, Title, Date/Time & Register */}
-          <div>
+          <div style={{ maxWidth: isPortrait ? '100%' : isSquare ? '90%' : '70%' }}>
             {/* Webinar Tag */}
             <div
-              className="inline-block rounded-md font-bold tracking-wide"
+              className="inline-block rounded-bento font-bold tracking-wide"
               style={{
                 backgroundColor: accentColor,
                 color: '#000000',
                 padding: `${8 * scaleFactor}px ${16 * scaleFactor}px`,
                 fontSize: `${16 * scaleFactor}px`,
-                marginBottom: `${32 * scaleFactor}px`,
+                marginBottom: `${isPortrait ? 24 : 32}px`,
               }}
             >
               Webinar
@@ -99,19 +118,24 @@ const ProfessionalTemplate: React.FC<ProfessionalTemplateProps> = ({
             <h1
               className="font-bold leading-tight text-white"
               style={{
-                fontSize: title.length > 80 ? `${36 * scaleFactor}px` : title.length > 50 ? `${44 * scaleFactor}px` : `${52 * scaleFactor}px`,
+                fontSize: `${getTitleFontSize()}px`,
                 fontWeight: 700,
                 lineHeight: 1.2,
                 letterSpacing: '-0.01em',
-                maxWidth: `${900 * scaleFactor}px`,
-                marginBottom: `${24 * scaleFactor}px`,
+                marginBottom: `${isPortrait ? 20 : 24}px`,
               }}
             >
               {title || 'Your Webinar Title Here'}
             </h1>
 
             {/* Date/Time & Register Button */}
-            <div className="flex items-center" style={{ gap: `${32 * scaleFactor}px` }}>
+            <div 
+              className="flex items-center" 
+              style={{ 
+                gap: `${isPortrait ? 16 : 32}px`,
+                flexWrap: isPortrait ? 'wrap' : 'nowrap',
+              }}
+            >
               {/* Date & Time */}
               {(date || time) && (
                 <div className="flex items-center" style={{ gap: `${16 * scaleFactor}px` }}>
@@ -120,21 +144,21 @@ const ProfessionalTemplate: React.FC<ProfessionalTemplateProps> = ({
                       className="font-bold"
                       style={{ 
                         color: accentColor,
-                        fontSize: `${20 * scaleFactor}px`,
+                        fontSize: `${18 * scaleFactor}px`,
                       }}
                     >
                       {formatDate(date)}
                     </div>
                   )}
                   {date && time && (
-                    <div className="text-white" style={{ fontSize: `${20 * scaleFactor}px` }}>|</div>
+                    <div className="text-white" style={{ fontSize: `${18 * scaleFactor}px` }}>|</div>
                   )}
                   {time && (
                     <div
                       className="font-bold"
                       style={{ 
                         color: accentColor,
-                        fontSize: `${20 * scaleFactor}px`,
+                        fontSize: `${18 * scaleFactor}px`,
                       }}
                     >
                       {formatTime(time, showTimezone ? timezone : undefined)}
@@ -145,12 +169,12 @@ const ProfessionalTemplate: React.FC<ProfessionalTemplateProps> = ({
 
               {/* Register Button */}
               <div
-                className="rounded-lg font-bold"
+                className="rounded-bento font-bold"
                 style={{
                   backgroundColor: accentColor,
                   color: '#000000',
-                  padding: `${12 * scaleFactor}px ${32 * scaleFactor}px`,
-                  fontSize: `${18 * scaleFactor}px`,
+                  padding: `${10 * scaleFactor}px ${28 * scaleFactor}px`,
+                  fontSize: `${16 * scaleFactor}px`,
                 }}
               >
                 Register
@@ -165,8 +189,8 @@ const ProfessionalTemplate: React.FC<ProfessionalTemplateProps> = ({
               <div
                 className="rounded-full overflow-hidden bg-white shadow-lg flex-shrink-0"
                 style={{
-                  width: `${80 * scaleFactor}px`,
-                  height: `${80 * scaleFactor}px`,
+                  width: `${isPortrait ? 90 : isSquare ? 85 : 80}px`,
+                  height: `${isPortrait ? 90 : isSquare ? 85 : 80}px`,
                   border: `${3 * scaleFactor}px solid white`,
                 }}
               >
@@ -181,10 +205,10 @@ const ProfessionalTemplate: React.FC<ProfessionalTemplateProps> = ({
               <div
                 className="rounded-full flex items-center justify-center text-white font-black bg-white/20 flex-shrink-0"
                 style={{
-                  width: `${80 * scaleFactor}px`,
-                  height: `${80 * scaleFactor}px`,
+                  width: `${isPortrait ? 90 : isSquare ? 85 : 80}px`,
+                  height: `${isPortrait ? 90 : isSquare ? 85 : 80}px`,
                   border: `${3 * scaleFactor}px solid white`,
-                  fontSize: `${32 * scaleFactor}px`,
+                  fontSize: `${isPortrait ? 36 : isSquare ? 34 : 32}px`,
                 }}
               >
                 {speaker.name ? speaker.name.charAt(0).toUpperCase() : '?'}
@@ -193,10 +217,19 @@ const ProfessionalTemplate: React.FC<ProfessionalTemplateProps> = ({
 
             {/* Name & Title */}
             <div>
-              <p className="font-bold text-white leading-tight" style={{ fontSize: `${20 * scaleFactor}px`, marginBottom: `${4 * scaleFactor}px` }}>
+              <p 
+                className="font-bold text-white leading-tight" 
+                style={{ 
+                  fontSize: `${isPortrait ? 22 : isSquare ? 21 : 20}px`, 
+                  marginBottom: `${4 * scaleFactor}px` 
+                }}
+              >
                 {speaker.name || 'Speaker Name'}
               </p>
-              <p className="text-white leading-tight" style={{ fontSize: `${14 * scaleFactor}px` }}>
+              <p 
+                className="text-white leading-tight" 
+                style={{ fontSize: `${isPortrait ? 15 : isSquare ? 14.5 : 14}px` }}
+              >
                 {speaker.title || 'Title & Company'}
               </p>
             </div>
@@ -204,13 +237,13 @@ const ProfessionalTemplate: React.FC<ProfessionalTemplateProps> = ({
         </div>
       </div>
 
-      {/* Bottom Section - Accent Color Footer (20%) */}
+      {/* Bottom Section - Accent Color Footer */}
       <div
         className="absolute bottom-0 left-0 right-0 flex items-center justify-end"
         style={{
           backgroundColor: accentColor,
           height: `${bottomHeight}px`,
-          padding: `0 ${64 * scaleFactor}px`,
+          padding: `0 ${horizontalPadding}px`,
         }}
       >
         {/* Company Logo */}
@@ -220,8 +253,8 @@ const ProfessionalTemplate: React.FC<ProfessionalTemplateProps> = ({
             alt="Company logo"
             className="object-contain"
             style={{ 
-              height: `${64 * scaleFactor}px`,
-              maxWidth: `${300 * scaleFactor}px`,
+              height: `${isPortrait ? 70 : isSquare ? 68 : 64}px`,
+              maxWidth: `${isPortrait ? 250 : isSquare ? 280 : 300}px`,
             }}
             crossOrigin="anonymous"
           />

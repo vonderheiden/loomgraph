@@ -36,14 +36,14 @@ const DateTimeForm: React.FC = () => {
   };
 
   return (
-    <div className="bg-bento-card border border-bento-border rounded-bento shadow-soft p-6">
+    <div className="bg-bento-card border border-bento-border rounded-bento shadow-soft p-4 lg:p-6">
       <h2 className="text-lg font-semibold mb-4">Date & Time</h2>
 
-      {/* Date and Time - Side by Side */}
-      <div className="grid grid-cols-2 gap-4 mb-4">
+      {/* Date and Time - Side by Side on larger screens, stacked on small mobile */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
         {/* Date Picker */}
         <div>
-          <label htmlFor="date" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="date" className="block text-sm font-medium text-gray-700 mb-2">
             Webinar Date *
           </label>
           <input
@@ -51,7 +51,10 @@ const DateTimeForm: React.FC = () => {
             id="date"
             value={state.date}
             onChange={(e) => updateField('date', e.target.value)}
-            className="w-full px-3 py-2 border border-bento-border rounded-lg focus:border-action-primary focus:ring-2 focus:ring-action-primary/20 outline-none transition-colors"
+            className="w-full px-3 py-3 lg:py-2 border border-bento-border rounded-bento outline-none transition-colors focus:border-[var(--accent-color)] focus:ring-2 min-h-[44px]"
+            style={{
+              '--tw-ring-color': 'color-mix(in srgb, var(--accent-color) 20%, transparent)',
+            } as React.CSSProperties}
           />
           {state.date && (
             <p className="text-xs text-gray-600 mt-1">{formatDate(state.date)}</p>
@@ -60,7 +63,7 @@ const DateTimeForm: React.FC = () => {
 
         {/* Time Picker */}
         <div>
-          <label htmlFor="time" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="time" className="block text-sm font-medium text-gray-700 mb-2">
             Webinar Time *
           </label>
           <input
@@ -68,7 +71,10 @@ const DateTimeForm: React.FC = () => {
             id="time"
             value={state.time}
             onChange={(e) => updateField('time', e.target.value)}
-            className="w-full px-3 py-2 border border-bento-border rounded-lg focus:border-action-primary focus:ring-2 focus:ring-action-primary/20 outline-none transition-colors"
+            className="w-full px-3 py-3 lg:py-2 border border-bento-border rounded-bento outline-none transition-colors focus:border-[var(--accent-color)] focus:ring-2 min-h-[44px]"
+            style={{
+              '--tw-ring-color': 'color-mix(in srgb, var(--accent-color) 20%, transparent)',
+            } as React.CSSProperties}
           />
           {state.time && (
             <p className="text-xs text-gray-600 mt-1">{formatTime(state.time)}</p>
@@ -76,16 +82,19 @@ const DateTimeForm: React.FC = () => {
         </div>
       </div>
 
-      {/* Timezone Toggle and Selector - Side by Side */}
-      <div className="grid grid-cols-2 gap-4">
+      {/* Timezone Toggle and Selector - Side by Side on larger screens, stacked on small mobile */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {/* Timezone Toggle */}
-        <div className="flex items-center">
-          <label className="flex items-center cursor-pointer">
+        <div className="flex items-center min-h-[44px]">
+          <label className="flex items-center cursor-pointer py-2">
             <input
               type="checkbox"
               checked={state.showTimezone}
               onChange={(e) => updateField('showTimezone', e.target.checked)}
-              className="w-4 h-4 text-action-primary border-bento-border rounded focus:ring-2 focus:ring-action-primary/20"
+              className="w-5 h-5 text-action-primary border-bento-border rounded focus:ring-2"
+              style={{
+                '--tw-ring-color': 'color-mix(in srgb, var(--accent-color) 20%, transparent)',
+              } as React.CSSProperties}
             />
             <span className="ml-2 text-sm font-medium text-gray-700">Show timezone</span>
           </label>
@@ -95,7 +104,7 @@ const DateTimeForm: React.FC = () => {
         <div>
           {state.showTimezone && (
             <>
-              <label htmlFor="timezone" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="timezone" className="block text-sm font-medium text-gray-700 mb-2">
                 Timezone
               </label>
               <select
@@ -104,7 +113,10 @@ const DateTimeForm: React.FC = () => {
                 onChange={(e) =>
                   updateField('timezone', e.target.value as BannerState['timezone'])
                 }
-                className="w-full px-3 py-2 border border-bento-border rounded-lg focus:border-action-primary focus:ring-2 focus:ring-action-primary/20 outline-none transition-colors bg-white"
+                className="w-full px-3 py-3 lg:py-2 border border-bento-border rounded-bento outline-none transition-colors bg-white focus:border-[var(--accent-color)] focus:ring-2 min-h-[44px]"
+                style={{
+                  '--tw-ring-color': 'color-mix(in srgb, var(--accent-color) 20%, transparent)',
+                } as React.CSSProperties}
               >
                 {timezones.map((tz) => (
                   <option key={tz.value} value={tz.value}>

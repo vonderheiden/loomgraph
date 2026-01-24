@@ -4,11 +4,22 @@ import html2canvas from 'html2canvas';
 import { useBannerState } from '../../context/BannerContext';
 import { generateFileName, downloadBlob } from '../../utils/exportHelpers';
 
-interface ExportButtonProps {
-  variant?: 'full' | 'compact';
-}
-
-const ExportButton: React.FC<ExportButtonProps> = ({ variant = 'full' }) => {
+/**
+ * FloatingActionButton Component
+ * 
+ * Mobile-only floating action button for exporting banners.
+ * 
+ * Features:
+ * - Fixed positioning at bottom-right (bottom-6 right-6)
+ * - 56×56px dimensions (w-14 h-14) for comfortable touch target
+ * - Circular shape with rounded-full
+ * - High z-index (z-30) for visibility above other content
+ * - Only visible on mobile (<768px) with lg:hidden
+ * - Connected to export functionality with visual feedback
+ * 
+ * Requirements: 7.3, 8.5, 10.2
+ */
+const FloatingActionButton: React.FC = () => {
   const { state } = useBannerState();
   const [isExporting, setIsExporting] = useState(false);
   const [exportSuccess, setExportSuccess] = useState(false);
@@ -147,54 +158,38 @@ const ExportButton: React.FC<ExportButtonProps> = ({ variant = 'full' }) => {
   };
 
   return (
-    <div className={variant === 'full' ? 'space-y-2' : ''}>
-      <button
-        onClick={handleExport}
-        disabled={isExporting}
-        className={`${
-          variant === 'full' ? 'w-full py-4 px-6 min-h-[56px]' : 'py-3 px-4 min-h-[44px] lg:py-2 lg:min-h-[40px]'
-        } rounded-bento font-semibold text-white transition-all flex items-center justify-center gap-2 ${
+    <button
+      onClick={handleExport}
+      disabled={isExporting}
+      className={`
+        lg:hidden fixed bottom-6 right-6 z-30
+        w-14 h-14 rounded-full
+        flex items-center justify-center
+        transition-all duration-200
+        focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-action-primary
+        ${
           exportSuccess
-            ? 'bg-green-500 hover:bg-green-600'
+            ? 'bg-green-500 hover:bg-green-600 shadow-lg hover:shadow-xl'
             : error
-            ? 'bg-red-500 hover:bg-red-600'
-            : 'bg-action-primary hover:bg-blue-600'
-        } ${isExporting ? 'opacity-75 cursor-not-allowed' : ''}`}
-      >
-        {isExporting ? (
-          <>
-            <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-            {variant === 'full' && <span>Generating...</span>}
-          </>
-        ) : exportSuccess ? (
-          <>
-            <Check className="w-5 h-5" />
-            {variant === 'full' && <span>Downloaded!</span>}
-          </>
-        ) : error ? (
-          <>
-            <AlertCircle className="w-5 h-5" />
-            {variant === 'full' && <span>Try Again</span>}
-          </>
-        ) : (
-          <>
-            <Download className="w-5 h-5" />
-            {variant === 'full' ? <span>Download Banner</span> : <span>Export</span>}
-          </>
-        )}
-      </button>
-      {variant === 'full' && error && (
-        <p className="text-xs text-red-600 text-center">
-          Export failed. Check console for details.
-        </p>
+            ? 'bg-red-500 hover:bg-red-600 shadow-lg hover:shadow-xl'
+            : 'bg-action-primary text-white shadow-lg hover:shadow-xl hover:bg-blue-600'
+        }
+        ${isExporting ? 'opacity-75 cursor-not-allowed' : ''}
+      `}
+      aria-label="Export banner"
+      data-testid="floating-action-button"
+    >
+      {isExporting ? (
+        <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
+      ) : exportSuccess ? (
+        <Check className="w-6 h-6 text-white" />
+      ) : error ? (
+        <AlertCircle className="w-6 h-6 text-white" />
+      ) : (
+        <Download className="w-6 h-6 text-white" />
       )}
-      {variant === 'full' && isExporting && (
-        <p className="text-xs text-gray-600 text-center">
-          Please wait while we generate your banner...
-        </p>
-      )}
-    </div>
+    </button>
   );
 };
 
-export default ExportButton;
+export default FloatingActionButton;

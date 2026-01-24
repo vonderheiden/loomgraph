@@ -1,30 +1,29 @@
 import React from 'react';
-import BannerCanvas from './BannerCanvas';
-import ExportButton from './ExportButton';
+import PreviewHeader from './PreviewHeader';
+import LinkedInStage from './LinkedInStage';
 
+/**
+ * PreviewPanel Component
+ * 
+ * Right-side panel displaying the real-time banner preview with LinkedIn Stage aesthetic.
+ * 
+ * Features:
+ * - Fully sticky panel (no scrolling) with h-screen
+ * - Hidden on mobile with hidden lg:flex
+ * - #F3F4F6 background for stage area
+ * - PreviewHeader with export button at top-right
+ * - LinkedInStage with centered canvas container
+ * 
+ * Requirements: 1.5, 4.3, 10.1
+ */
 const PreviewPanel: React.FC = () => {
   return (
-    <div className="w-full lg:w-3/5 bg-gray-50 flex flex-col">
-      {/* Sticky header */}
-      <div className="sticky top-0 z-10 bg-white border-b border-gray-200 px-6 py-4">
-        <h2 className="text-xl font-bold text-gray-900">Live Preview</h2>
-        <p className="text-sm text-gray-600">Updates in real-time as you type</p>
-      </div>
-
-      {/* Sticky content - preview stays in view */}
-      <div className="sticky top-[73px] flex-1 overflow-y-auto p-6" style={{ height: 'calc(100vh - 73px)' }}>
-        <div className="max-w-5xl mx-auto space-y-4">
-          {/* Preview Container - Centered and responsive */}
-          <div className="bg-white rounded-lg shadow-lg p-6">
-            <div className="flex items-center justify-center min-h-[400px]">
-              <BannerCanvas />
-            </div>
-          </div>
-
-          {/* Export Button */}
-          <ExportButton />
-        </div>
-      </div>
+    <div 
+      className="w-full lg:w-[65%] hidden lg:flex lg:flex-col lg:sticky lg:top-0 lg:h-screen bg-[#F3F4F6]" 
+      data-testid="preview-panel"
+    >
+      <PreviewHeader />
+      <LinkedInStage />
     </div>
   );
 };

@@ -1,16 +1,33 @@
 @import "tailwindcss";
 
 @theme {
+  /* Bento Design System Colors */
   --color-bento-bg: #F9FAFB;
   --color-bento-border: #E5E7EB;
   --color-bento-card: #FFFFFF;
   --color-action-primary: #3B82F6;
   --color-action-secondary: #8B5CF6;
   
+  /* Bento Shadow Utilities */
   --shadow-soft: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.1);
-  --shadow-soft-lg: 0 4px 6px rgba(0, 0, 0, 0.05), 0 2px 4px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
   
+  /* Bento Border Radius - 12px for all cards and containers */
   --radius-bento: 12px;
+  
+  /* 8px Grid System - Spacing scale */
+  --spacing-1: 8px;   /* 8px */
+  --spacing-2: 16px;  /* 16px */
+  --spacing-3: 24px;  /* 24px */
+  --spacing-4: 32px;  /* 32px */
+  --spacing-5: 40px;  /* 40px */
+  --spacing-6: 48px;  /* 48px */
+  --spacing-8: 64px;  /* 64px */
+  
+  /* Custom Breakpoints */
+  --breakpoint-sm: 400px;  /* Small mobile breakpoint for date/time stacking */
+  --breakpoint-md: 640px;  /* Default medium breakpoint */
+  --breakpoint-lg: 768px;  /* Tablet/desktop breakpoint */
 }
 
 html {
@@ -30,14 +47,19 @@ html {
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  /* Dynamic accent color for focus rings - updated by BannerContext */
+  --accent-color: #3B82F6;
 }
 
 body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
+  overflow-x: hidden;
 }
 
 #root {
   min-height: 100vh;
+  overflow-x: hidden;
 }

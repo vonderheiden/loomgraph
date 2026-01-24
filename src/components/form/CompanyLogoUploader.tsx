@@ -67,7 +67,7 @@ const CompanyLogoUploader: React.FC<CompanyLogoUploaderProps> = ({
         <button
           type="button"
           onClick={handleClick}
-          className="w-full h-24 border-2 border-dashed border-bento-border rounded-lg hover:border-action-primary hover:bg-gray-50 transition-colors flex flex-col items-center justify-center gap-2 text-gray-600"
+          className="w-full min-h-[96px] p-4 border-2 border-dashed border-bento-border rounded-bento hover:border-action-primary hover:bg-gray-50 transition-colors flex flex-col items-center justify-center gap-2 text-gray-600"
         >
           <Upload className="w-6 h-6" />
           <span className="text-sm">Upload Company Logo</span>
@@ -75,7 +75,7 @@ const CompanyLogoUploader: React.FC<CompanyLogoUploaderProps> = ({
         </button>
       ) : (
         <div className="relative inline-block">
-          <div className="w-32 h-24 border border-bento-border rounded-lg overflow-hidden bg-white flex items-center justify-center p-2">
+          <div className="w-32 h-24 border border-bento-border rounded-bento overflow-hidden bg-white flex items-center justify-center p-2">
             <img
               src={logoUrl}
               alt="Company logo preview"
@@ -85,10 +85,10 @@ const CompanyLogoUploader: React.FC<CompanyLogoUploaderProps> = ({
           <button
             type="button"
             onClick={handleRemove}
-            className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors shadow-md"
+            className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-2 hover:bg-red-600 transition-colors shadow-md min-w-[44px] min-h-[44px] flex items-center justify-center"
             aria-label="Remove company logo"
           >
-            <X className="w-4 h-4" />
+            <X className="w-5 h-5" />
           </button>
         </div>
       )}
