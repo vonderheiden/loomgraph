@@ -60,13 +60,13 @@ const DuoTemplate: React.FC<DuoTemplateProps> = ({
 
   const renderSpeaker = (speaker: Speaker, index: number) => (
     <div key={index} className="flex items-center" style={{ gap: `${16 * scaleFactor}px` }}>
-      {/* Headshot */}
+      {/* Headshot - Increased by 30% */}
       {speaker.headshotUrl ? (
         <div
           className="rounded-full overflow-hidden bg-white shadow-lg flex-shrink-0"
           style={{
-            width: `${isPortrait ? 90 : isSquare ? 85 : 80}px`,
-            height: `${isPortrait ? 90 : isSquare ? 85 : 80}px`,
+            width: `${isPortrait ? 117 : isSquare ? 110 : 104}px`,
+            height: `${isPortrait ? 117 : isSquare ? 110 : 104}px`,
             border: `${3 * scaleFactor}px solid white`,
           }}
         >
@@ -81,22 +81,22 @@ const DuoTemplate: React.FC<DuoTemplateProps> = ({
         <div
           className="rounded-full flex items-center justify-center text-white font-black bg-white/20 flex-shrink-0"
           style={{
-            width: `${isPortrait ? 90 : isSquare ? 85 : 80}px`,
-            height: `${isPortrait ? 90 : isSquare ? 85 : 80}px`,
+            width: `${isPortrait ? 117 : isSquare ? 110 : 104}px`,
+            height: `${isPortrait ? 117 : isSquare ? 110 : 104}px`,
             border: `${3 * scaleFactor}px solid white`,
-            fontSize: `${isPortrait ? 36 : isSquare ? 34 : 32}px`,
+            fontSize: `${isPortrait ? 47 : isSquare ? 44 : 42}px`,
           }}
         >
           {speaker.name ? speaker.name.charAt(0).toUpperCase() : '?'}
         </div>
       )}
 
-      {/* Name & Title */}
+      {/* Name & Title - Increased by 30% */}
       <div>
         <p 
           className="font-bold text-white leading-tight" 
           style={{ 
-            fontSize: `${isPortrait ? 22 : isSquare ? 21 : 20}px`, 
+            fontSize: `${isPortrait ? 29 : isSquare ? 27 : 26}px`, 
             marginBottom: `${4 * scaleFactor}px` 
           }}
         >
@@ -104,7 +104,7 @@ const DuoTemplate: React.FC<DuoTemplateProps> = ({
         </p>
         <p 
           className="text-white leading-tight" 
-          style={{ fontSize: `${isPortrait ? 15 : isSquare ? 14.5 : 14}px` }}
+          style={{ fontSize: `${isPortrait ? 20 : isSquare ? 19 : 18}px` }}
         >
           {speaker.title || 'Title & Company'}
         </p>

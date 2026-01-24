@@ -61,13 +61,13 @@ const PanelTemplate: React.FC<PanelTemplateProps> = ({
 
   const renderSpeaker = (speaker: Speaker, index: number) => (
     <div key={index} className="flex items-center" style={{ gap: `${12 * scaleFactor}px` }}>
-      {/* Headshot */}
+      {/* Headshot - Increased by 30% */}
       {speaker.headshotUrl ? (
         <div
           className="rounded-full overflow-hidden bg-white shadow-lg flex-shrink-0"
           style={{
-            width: `${isPortrait ? 85 : isSquare ? 80 : 70}px`,
-            height: `${isPortrait ? 85 : isSquare ? 80 : 70}px`,
+            width: `${isPortrait ? 110 : isSquare ? 104 : 91}px`,
+            height: `${isPortrait ? 110 : isSquare ? 104 : 91}px`,
             border: `${3 * scaleFactor}px solid white`,
           }}
         >
@@ -82,22 +82,22 @@ const PanelTemplate: React.FC<PanelTemplateProps> = ({
         <div
           className="rounded-full flex items-center justify-center text-white font-black bg-white/20 flex-shrink-0"
           style={{
-            width: `${isPortrait ? 85 : isSquare ? 80 : 70}px`,
-            height: `${isPortrait ? 85 : isSquare ? 80 : 70}px`,
+            width: `${isPortrait ? 110 : isSquare ? 104 : 91}px`,
+            height: `${isPortrait ? 110 : isSquare ? 104 : 91}px`,
             border: `${3 * scaleFactor}px solid white`,
-            fontSize: `${isPortrait ? 34 : isSquare ? 32 : 28}px`,
+            fontSize: `${isPortrait ? 44 : isSquare ? 42 : 36}px`,
           }}
         >
           {speaker.name ? speaker.name.charAt(0).toUpperCase() : '?'}
         </div>
       )}
 
-      {/* Name & Title */}
+      {/* Name & Title - Increased by 30% */}
       <div>
         <p 
           className="font-bold text-white leading-tight" 
           style={{ 
-            fontSize: `${isPortrait ? 20 : isSquare ? 19 : 18}px`, 
+            fontSize: `${isPortrait ? 26 : isSquare ? 25 : 23}px`, 
             marginBottom: `${4 * scaleFactor}px` 
           }}
         >
@@ -105,7 +105,7 @@ const PanelTemplate: React.FC<PanelTemplateProps> = ({
         </p>
         <p 
           className="text-white leading-tight" 
-          style={{ fontSize: `${isPortrait ? 13 : isSquare ? 12.5 : 12}px` }}
+          style={{ fontSize: `${isPortrait ? 17 : isSquare ? 16 : 16}px` }}
         >
           {speaker.title || 'Title & Company'}
         </p>
