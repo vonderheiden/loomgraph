@@ -5,8 +5,7 @@ import SpeakerCountSelector from './form/SpeakerCountSelector';
 import WebinarDetailsForm from './form/WebinarDetailsForm';
 import SpeakerSection from './form/SpeakerSection';
 import DateTimeForm from './form/DateTimeForm';
-import ColorPicker from './form/ColorPicker';
-import BackgroundSelector from './form/BackgroundSelector';
+import BrandStyleSection from './form/BrandStyleSection';
 import DimensionSelector from './form/DimensionSelector';
 
 const FormPanel: React.FC = () => {
@@ -38,8 +37,7 @@ const FormPanel: React.FC = () => {
             />
           ))}
 
-          <ColorPicker />
-          <BackgroundSelector />
+          <BrandStyleSection />
         </div>
       </div>
     </div>

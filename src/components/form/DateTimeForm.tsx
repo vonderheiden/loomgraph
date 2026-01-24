@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useBannerState } from '../../context/BannerContext';
 import { BannerState } from '../../types/banner.types';
+import { Calendar, ChevronDown, ChevronUp } from 'lucide-react';
 
 const DateTimeForm: React.FC = () => {
   const { state, updateField } = useBannerState();
+  const [isExpanded, setIsExpanded] = useState(true);
 
   const timezones = [
     { value: 'PT', label: 'PT (Pacific Time)' },
@@ -36,9 +38,29 @@ const DateTimeForm: React.FC = () => {
   };
 
   return (
-    <div className="bg-bento-card border border-bento-border rounded-bento shadow-soft p-4 lg:p-6">
-      <h2 className="text-lg font-semibold mb-4">Date & Time</h2>
+    <div className="bg-bento-card border border-bento-border rounded-bento shadow-soft overflow-hidden">
+      {/* Collapsible Header */}
+      <button
+        type="button"
+        onClick={() => setIsExpanded(!isExpanded)}
+        className="w-full flex items-center justify-between p-4 lg:p-6 hover:bg-gray-50 transition-colors min-h-[44px]"
+        aria-expanded={isExpanded}
+        aria-label="Toggle date and time section"
+      >
+        <div className="flex items-center gap-2">
+          <Calendar className="w-5 h-5 text-gray-700" aria-hidden="true" />
+          <h2 className="text-lg font-semibold">Date & Time</h2>
+        </div>
+        {isExpanded ? (
+          <ChevronUp className="w-5 h-5 text-gray-500" aria-hidden="true" />
+        ) : (
+          <ChevronDown className="w-5 h-5 text-gray-500" aria-hidden="true" />
+        )}
+      </button>
 
+      {/* Collapsible Content */}
+      {isExpanded && (
+        <div className="px-4 pb-4 lg:px-6 lg:pb-6 border-t border-bento-border">
       {/* Date and Time - Side by Side on larger screens, stacked on small mobile */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
         {/* Date Picker */}
@@ -128,6 +150,8 @@ const DateTimeForm: React.FC = () => {
           )}
         </div>
       </div>
+        </div>
+      )}
     </div>
   );
 };

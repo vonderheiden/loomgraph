@@ -1,18 +1,37 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useBannerState } from '../../context/BannerContext';
-import { FileText } from 'lucide-react';
+import { FileText, ChevronDown, ChevronUp } from 'lucide-react';
 
 const WebinarDetailsForm: React.FC = () => {
   const { state, updateField } = useBannerState();
+  const [isExpanded, setIsExpanded] = useState(true);
 
   const titleMaxLength = 100;
 
   return (
-    <div className="bg-bento-card border border-bento-border rounded-bento shadow-soft p-4 lg:p-6">
-      <div className="flex items-center gap-2 mb-4">
-        <FileText className="w-5 h-5 text-gray-700" aria-hidden="true" />
-        <h2 className="text-lg font-semibold">Webinar Details</h2>
-      </div>
+    <div className="bg-bento-card border border-bento-border rounded-bento shadow-soft overflow-hidden">
+      {/* Collapsible Header */}
+      <button
+        type="button"
+        onClick={() => setIsExpanded(!isExpanded)}
+        className="w-full flex items-center justify-between p-4 lg:p-6 hover:bg-gray-50 transition-colors min-h-[44px]"
+        aria-expanded={isExpanded}
+        aria-label="Toggle webinar details section"
+      >
+        <div className="flex items-center gap-2">
+          <FileText className="w-5 h-5 text-gray-700" aria-hidden="true" />
+          <h2 className="text-lg font-semibold">Webinar Details</h2>
+        </div>
+        {isExpanded ? (
+          <ChevronUp className="w-5 h-5 text-gray-500" aria-hidden="true" />
+        ) : (
+          <ChevronDown className="w-5 h-5 text-gray-500" aria-hidden="true" />
+        )}
+      </button>
+
+      {/* Collapsible Content */}
+      {isExpanded && (
+        <div className="px-4 pb-4 lg:px-6 lg:pb-6 border-t border-bento-border">
 
       {/* Title Input */}
       <div>
@@ -42,6 +61,8 @@ const WebinarDetailsForm: React.FC = () => {
           </span>
         </div>
       </div>
+        </div>
+      )}
     </div>
   );
 };
