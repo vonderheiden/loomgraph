@@ -1,5 +1,5 @@
 import React from 'react';
-import { Speaker } from '../../types/banner.types';
+import { Speaker, BannerDimension } from '../../types/banner.types';
 import { formatDate, formatTime } from '../../utils/exportHelpers';
 import { getBackgroundById } from '../../constants/backgrounds';
 
@@ -13,6 +13,7 @@ interface ProfessionalTemplateProps {
   accentColor: string;
   backgroundId: string;
   customBackgroundUrl?: string | null;
+  dimension: BannerDimension;
 }
 
 const ProfessionalTemplate: React.FC<ProfessionalTemplateProps> = ({
@@ -25,6 +26,7 @@ const ProfessionalTemplate: React.FC<ProfessionalTemplateProps> = ({
   accentColor,
   backgroundId,
   customBackgroundUrl,
+  dimension,
 }) => {
   const speaker = speakers[0] || { name: '', title: '', headshotUrl: null, companyLogoUrl: null };
 
@@ -36,8 +38,12 @@ const ProfessionalTemplate: React.FC<ProfessionalTemplateProps> = ({
   return (
     <div
       id="banner-template"
-      className="relative w-[1200px] h-[627px] overflow-hidden"
-      style={{ fontFamily: 'Inter, sans-serif' }}
+      className="relative overflow-hidden"
+      style={{ 
+        fontFamily: 'Inter, sans-serif',
+        width: `${dimension.width}px`,
+        height: `${dimension.height}px`,
+      }}
     >
       {/* Top Section - Background with Dark Overlay (80%) */}
       <div className="absolute inset-0 h-[502px]">

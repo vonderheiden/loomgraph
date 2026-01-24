@@ -1,3 +1,33 @@
+// Banner dimension configuration
+export interface BannerDimension {
+  width: number;
+  height: number;
+  label: 'landscape' | 'square' | 'portrait';
+  description: string;
+}
+
+// Available banner dimensions
+export const BANNER_DIMENSIONS: Record<string, BannerDimension> = {
+  landscape: {
+    width: 1200,
+    height: 627,
+    label: 'landscape',
+    description: 'Ideal for shared link previews',
+  },
+  square: {
+    width: 1080,
+    height: 1080,
+    label: 'square',
+    description: 'Works best for image-only posts',
+  },
+  portrait: {
+    width: 1080,
+    height: 1350,
+    label: 'portrait',
+    description: 'Works best for image-only posts',
+  },
+};
+
 // Speaker interface for multi-speaker support
 export interface Speaker {
   name: string;
@@ -27,6 +57,9 @@ export interface BannerState {
   backgroundId: string; // References background from constants or 'custom'
   customBackgroundUrl: string | null; // For user-uploaded images
   customBackgroundFile: File | null;
+  
+  // Dimension Selection
+  dimension: BannerDimension;
 }
 
 // Template configuration

@@ -6,6 +6,7 @@ import SpeakerSection from './form/SpeakerSection';
 import DateTimeForm from './form/DateTimeForm';
 import ColorPicker from './form/ColorPicker';
 import BackgroundSelector from './form/BackgroundSelector';
+import DimensionSelector from './form/DimensionSelector';
 
 const FormPanel: React.FC = () => {
   const { state, updateSpeaker } = useBannerState();
@@ -23,6 +24,7 @@ const FormPanel: React.FC = () => {
       <div className="overflow-y-auto p-6" style={{ height: 'calc(100vh - 80px)' }}>
         <div className="max-w-2xl mx-auto space-y-4">
           <SpeakerCountSelector />
+          <DimensionSelector />
           <WebinarDetailsForm />
           
           {/* Dynamic Speaker Sections with auto-collapse */}

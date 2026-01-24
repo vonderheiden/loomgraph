@@ -30,6 +30,7 @@ const BannerCanvas: React.FC = () => {
       accentColor: state.accentColor,
       backgroundId: state.backgroundId,
       customBackgroundUrl: state.customBackgroundUrl,
+      dimension: state.dimension, // Pass dimension to templates
     };
 
     switch (state.template) {
@@ -43,6 +44,11 @@ const BannerCanvas: React.FC = () => {
     }
   };
 
+  // Calculate scale factor to fit preview in viewport
+  // Assuming max preview width of ~700px
+  const maxPreviewWidth = 700;
+  const scaleFactor = Math.min(maxPreviewWidth / state.dimension.width, 1);
+
   return (
     <div className="relative">
       {isRendering && (
@@ -52,7 +58,15 @@ const BannerCanvas: React.FC = () => {
       )}
       
       {/* Render template at actual size, then scale down for preview */}
-      <div className="transform-gpu" style={{ transformOrigin: 'top left' }}>
+      <div 
+        className="transform-gpu" 
+        style={{ 
+          transformOrigin: 'top left',
+          transform: `scale(${scaleFactor})`,
+          width: `${state.dimension.width}px`,
+          height: `${state.dimension.height}px`,
+        }}
+      >
         {renderTemplate()}
       </div>
     </div>

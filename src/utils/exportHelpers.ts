@@ -1,15 +1,21 @@
+import { BannerDimension } from '../types/banner.types';
+
 /**
  * Generate a filename for the exported banner
  */
-export function generateFileName(title: string): string {
+export function generateFileName(title: string, dimension: BannerDimension): string {
   const sanitized = title
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-|-$/g, '')
     .substring(0, 50); // Limit length
 
+  const dimensionStr = `${dimension.width}x${dimension.height}`;
   const timestamp = new Date().getTime();
-  return sanitized ? `loomgraph-${sanitized}-${timestamp}.png` : `loomgraph-banner-${timestamp}.png`;
+  
+  return sanitized 
+    ? `webinar-banner-${dimensionStr}-${sanitized}-${timestamp}.png` 
+    : `webinar-banner-${dimensionStr}-${timestamp}.png`;
 }
 
 /**

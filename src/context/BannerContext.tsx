@@ -1,15 +1,17 @@
 import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react';
-import { BannerState, Speaker } from '../types/banner.types';
+import { BannerState, Speaker, BANNER_DIMENSIONS } from '../types/banner.types';
 
 // Helper to create empty speaker
-const createEmptySpeaker = (): Speaker => ({
-  name: '',
-  title: '',
-  headshotUrl: null,
-  headshotFile: null,
-  companyLogoUrl: null,
-  companyLogoFile: null,
-});
+function createEmptySpeaker(): Speaker {
+  return {
+    name: '',
+    title: '',
+    headshotUrl: null,
+    headshotFile: null,
+    companyLogoUrl: null,
+    companyLogoFile: null,
+  };
+}
 
 // Initial state with sensible defaults
 const initialState: BannerState = {
@@ -25,6 +27,7 @@ const initialState: BannerState = {
   backgroundId: 'color-dark-gray', // Default to dark gray
   customBackgroundUrl: null,
   customBackgroundFile: null,
+  dimension: BANNER_DIMENSIONS.landscape, // Default to landscape
 };
 
 // Context type
@@ -33,6 +36,7 @@ interface BannerContextType {
   updateField: <K extends keyof BannerState>(field: K, value: BannerState[K]) => void;
   updateSpeaker: (index: number, updates: Partial<Speaker>) => void;
   updateSpeakerCount: (count: 1 | 2 | 3) => void;
+  updateDimension: (dimension: BannerState['dimension']) => void;
   resetState: () => void;
 }
 
@@ -88,6 +92,11 @@ export const BannerProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     });
   }, []);
 
+  // Update dimension
+  const updateDimension = useCallback((dimension: BannerState['dimension']) => {
+    setState((prev) => ({ ...prev, dimension }));
+  }, []);
+
   // Reset to initial state
   const resetState = useCallback(() => {
     setState(initialState);
@@ -98,6 +107,7 @@ export const BannerProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     updateField,
     updateSpeaker,
     updateSpeakerCount,
+    updateDimension,
     resetState,
   };
 
@@ -105,6 +115,7 @@ export const BannerProvider: React.FC<{ children: ReactNode }> = ({ children }) 
 };
 
 // Custom hook to use the banner context
+// eslint-disable-next-line react-refresh/only-export-components
 export const useBannerState = (): BannerContextType => {
   const context = useContext(BannerContext);
   if (context === undefined) {

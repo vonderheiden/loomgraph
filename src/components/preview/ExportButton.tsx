@@ -34,8 +34,20 @@ const ExportButton: React.FC = () => {
       // Ensure element is visible and in viewport
       element.scrollIntoView({ behavior: 'smooth', block: 'center' });
       
-      // Wait for fonts to load - critical for text rendering
-      await document.fonts.ready;
+      // Wait for fonts to load with timeout - critical for text rendering
+      console.log('Waiting for fonts to load...');
+      try {
+        await Promise.race([
+          document.fonts.ready,
+          new Promise((_, reject) => 
+            setTimeout(() => reject(new Error('Font load timeout')), 5000)
+          )
+        ]);
+        console.log('Fonts loaded successfully');
+      } catch (fontError) {
+        console.warn('Font loading timed out, continuing with fallback fonts:', fontError);
+        // Continue with export using fallback fonts
+      }
       
       // Wait for images to load - check all img elements
       const images = element.querySelectorAll('img');
@@ -57,11 +69,14 @@ const ExportButton: React.FC = () => {
       // Additional wait for complete rendering
       await new Promise(resolve => setTimeout(resolve, 1500));
 
+      // Get dimension from state for dynamic sizing
+      const { width, height } = state.dimension;
+
       // Use html2canvas for reliable conversion at exact dimensions
       const canvas = await html2canvas(element, {
-        scale: 2, // 2x resolution for high quality (2400x1254)
-        width: 1200,
-        height: 627,
+        scale: 2, // 2x resolution for high quality
+        width: width,
+        height: height,
         useCORS: true, // Enable CORS for external images
         allowTaint: false,
         backgroundColor: null,
@@ -98,7 +113,7 @@ const ExportButton: React.FC = () => {
       }
 
       // Generate filename and download
-      const filename = generateFileName(state.title);
+      const filename = generateFileName(state.title, state.dimension);
       downloadBlob(blob, filename);
 
       // Show success state
