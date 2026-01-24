@@ -6,6 +6,7 @@ import { BACKGROUND_OPTIONS, getBackgroundById } from '../../constants/backgroun
 const BrandStyleSection: React.FC = () => {
   const { state, updateField } = useBannerState();
   const [isExpanded, setIsExpanded] = useState(false);
+  const [customBackgroundColor, setCustomBackgroundColor] = useState('#3B82F6');
 
   const presetColors = [
     { name: 'Electric Blue', value: '#3B82F6' },
@@ -14,10 +15,22 @@ const BrandStyleSection: React.FC = () => {
     { name: 'Rose Pink', value: '#F43F5E' },
   ];
 
+  // Filter background options to only show road images
+  const roadBackgrounds = BACKGROUND_OPTIONS.filter(bg => bg.type === 'image');
+
   const handleBackgroundChange = (backgroundId: string) => {
     updateField('backgroundId', backgroundId);
+    updateField('customBackgroundUrl', null); // Clear custom background when selecting preset
   };
 
+  const handleCustomColorSelect = (color: string) => {
+    setCustomBackgroundColor(color);
+    updateField('backgroundId', 'custom-color');
+    updateField('customBackgroundUrl', color);
+  };
+
+  // Determine if a custom color is selected
+  const isCustomColorSelected = state.backgroundId === 'custom-color' && state.customBackgroundUrl;
   const selectedBackground = getBackgroundById(state.backgroundId);
 
   return (
@@ -104,9 +117,36 @@ const BrandStyleSection: React.FC = () => {
           <div>
             <h3 className="text-sm font-semibold text-gray-700 mb-3">Background</h3>
 
-            {/* Grid of background options */}
-            <div className="grid grid-cols-4 gap-4" role="group" aria-label="Background options">
-              {BACKGROUND_OPTIONS.map((bg) => {
+            {/* Custom Background Color Picker */}
+            <div className="mb-4">
+              <div className="flex items-center gap-4">
+                <input
+                  type="color"
+                  id="backgroundColor"
+                  value={isCustomColorSelected ? state.customBackgroundUrl as string : customBackgroundColor}
+                  onChange={(e) => handleCustomColorSelect(e.target.value)}
+                  className="w-16 h-16 rounded-bento border border-bento-border cursor-pointer"
+                  aria-label="Select background color"
+                />
+                <div className="flex-1">
+                  <input
+                    type="text"
+                    value={isCustomColorSelected ? state.customBackgroundUrl as string : customBackgroundColor}
+                    onChange={(e) => handleCustomColorSelect(e.target.value)}
+                    placeholder="#3B82F6"
+                    className="w-full px-3 py-3 lg:py-2 border border-bento-border rounded-bento outline-none transition-colors font-mono text-sm focus:border-[var(--accent-color)] focus:ring-2 min-h-[44px]"
+                    style={{
+                      '--tw-ring-color': 'color-mix(in srgb, var(--accent-color) 20%, transparent)',
+                    } as React.CSSProperties}
+                    aria-label="Background color hex code"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Grid of road background options */}
+            <div className="grid grid-cols-3 gap-4" role="group" aria-label="Background options">
+              {roadBackgrounds.map((bg) => {
                 const isSelected = state.backgroundId === bg.id;
                 
                 return (
@@ -130,31 +170,24 @@ const BrandStyleSection: React.FC = () => {
                     aria-pressed={isSelected}
                   >
                     {/* Background preview */}
-                    {bg.type === 'color' ? (
-                      <div
-                        className="w-full h-full"
-                        style={{ backgroundColor: bg.value }}
-                      />
-                    ) : (
-                      <img
-                        src={bg.thumbnail || bg.value}
-                        alt={bg.name}
-                        className="w-full h-full object-cover"
-                        onError={(e) => {
-                          // Fallback if image doesn't exist yet
-                          const target = e.target as HTMLImageElement;
-                          target.style.display = 'none';
-                          const parent = target.parentElement;
-                          if (parent) {
-                            parent.style.backgroundColor = '#1a1a1a';
-                            const text = document.createElement('div');
-                            text.className = 'flex items-center justify-center h-full text-xs text-white';
-                            text.textContent = bg.name;
-                            parent.appendChild(text);
-                          }
-                        }}
-                      />
-                    )}
+                    <img
+                      src={bg.thumbnail || bg.value}
+                      alt={bg.name}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        // Fallback if image doesn't exist yet
+                        const target = e.target as HTMLImageElement;
+                        target.style.display = 'none';
+                        const parent = target.parentElement;
+                        if (parent) {
+                          parent.style.backgroundColor = '#1a1a1a';
+                          const text = document.createElement('div');
+                          text.className = 'flex items-center justify-center h-full text-xs text-white';
+                          text.textContent = bg.name;
+                          parent.appendChild(text);
+                        }
+                      }}
+                    />
 
                     {/* Selected indicator */}
                     {isSelected && (
@@ -173,7 +206,11 @@ const BrandStyleSection: React.FC = () => {
 
             {/* Selected background name */}
             <p className="text-xs text-gray-500 mt-3">
-              Selected: <span className="font-medium">{selectedBackground?.name || 'None'}</span>
+              Selected: <span className="font-medium">
+                {isCustomColorSelected 
+                  ? `Custom Color (${state.customBackgroundUrl})` 
+                  : selectedBackground?.name || 'None'}
+              </span>
             </p>
           </div>
         </div>

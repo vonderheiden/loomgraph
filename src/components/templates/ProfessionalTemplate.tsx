@@ -32,7 +32,10 @@ const ProfessionalTemplate: React.FC<ProfessionalTemplateProps> = ({
 
   // Get background configuration
   const background = getBackgroundById(backgroundId);
-  const isColorBackground = background?.type === 'color';
+  
+  // Check if using custom background color (starts with #)
+  const isCustomColor = customBackgroundUrl && customBackgroundUrl.startsWith('#');
+  const isColorBackground = isCustomColor || background?.type === 'color';
   const backgroundValue = customBackgroundUrl || background?.value || '#1a1a1a';
 
   // Calculate dimension-specific layout parameters
