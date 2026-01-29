@@ -14,6 +14,7 @@ const CompanyLogoUploader: React.FC<CompanyLogoUploaderProps> = ({
   speakerIndex,
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isDragging, setIsDragging] = React.useState(false);
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -29,6 +30,42 @@ const CompanyLogoUploader: React.FC<CompanyLogoUploaderProps> = ({
     // Create preview URL
     const url = URL.createObjectURL(file);
     onLogoChange(file, url);
+  };
+
+  const handleFile = (file: File) => {
+    // Validate file
+    const validation = validateImageFile(file, 2 * 1024 * 1024); // 2MB max for logos
+    if (!validation.isValid) {
+      alert(validation.error);
+      return;
+    }
+
+    // Create preview URL
+    const url = URL.createObjectURL(file);
+    onLogoChange(file, url);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+
+    const file = e.dataTransfer.files?.[0];
+    if (file) {
+      handleFile(file);
+    }
   };
 
   const handleRemove = () => {
@@ -67,10 +104,22 @@ const CompanyLogoUploader: React.FC<CompanyLogoUploaderProps> = ({
         <button
           type="button"
           onClick={handleClick}
-          className="w-full min-h-[96px] p-4 border-2 border-dashed border-bento-border rounded-bento hover:border-action-primary hover:bg-gray-50 transition-colors flex flex-col items-center justify-center gap-2 text-gray-600"
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onDrop={handleDrop}
+          className={`w-full min-h-[96px] p-4 border-2 border-dashed rounded-bento transition-colors flex flex-col items-center justify-center gap-2 text-gray-600 ${
+            isDragging
+              ? 'border-action-primary bg-blue-50'
+              : 'border-bento-border hover:border-action-primary hover:bg-gray-50'
+          }`}
         >
           <Upload className="w-6 h-6" />
-          <span className="text-sm">Upload Company Logo</span>
+          <span className="text-sm font-medium">
+            {isDragging ? 'Drop logo here' : 'Upload Company Logo'}
+          </span>
+          <span className="text-xs text-gray-500">
+            {isDragging ? 'Release to upload' : 'Click or drag & drop'}
+          </span>
           <span className="text-xs text-gray-500">PNG or JPG, max 2MB</span>
         </button>
       ) : (

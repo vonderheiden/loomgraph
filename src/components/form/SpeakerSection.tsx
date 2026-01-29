@@ -20,6 +20,7 @@ const SpeakerSection: React.FC<SpeakerSectionProps> = ({
   onToggle,
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isDragging, setIsDragging] = React.useState(false);
 
   const nameMaxLength = 50;
   const titleMaxLength = 50;
@@ -38,6 +39,42 @@ const SpeakerSection: React.FC<SpeakerSectionProps> = ({
     // Create preview URL
     const url = URL.createObjectURL(file);
     onUpdate({ headshotFile: file, headshotUrl: url });
+  };
+
+  const handleHeadshotFile = (file: File) => {
+    // Validate file
+    const validation = validateImageFile(file, 5 * 1024 * 1024); // 5MB max
+    if (!validation.isValid) {
+      alert(validation.error);
+      return;
+    }
+
+    // Create preview URL
+    const url = URL.createObjectURL(file);
+    onUpdate({ headshotFile: file, headshotUrl: url });
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+
+    const file = e.dataTransfer.files?.[0];
+    if (file) {
+      handleHeadshotFile(file);
+    }
   };
 
   const handleHeadshotRemove = () => {
@@ -170,11 +207,23 @@ const SpeakerSection: React.FC<SpeakerSectionProps> = ({
               <button
                 type="button"
                 onClick={handleHeadshotClick}
-                className="w-full min-h-[128px] p-4 border-2 border-dashed border-bento-border rounded-bento hover:border-action-primary hover:bg-gray-50 transition-colors flex flex-col items-center justify-center gap-2 text-gray-600"
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+                className={`w-full min-h-[128px] p-4 border-2 border-dashed rounded-bento transition-colors flex flex-col items-center justify-center gap-2 text-gray-600 ${
+                  isDragging
+                    ? 'border-action-primary bg-blue-50'
+                    : 'border-bento-border hover:border-action-primary hover:bg-gray-50'
+                }`}
                 aria-label={`Upload headshot for speaker ${speakerIndex + 1}`}
               >
                 <Upload className="w-8 h-8" aria-hidden="true" />
-                <span className="text-sm">Upload Headshot</span>
+                <span className="text-sm font-medium">
+                  {isDragging ? 'Drop image here' : 'Upload Headshot'}
+                </span>
+                <span className="text-xs text-gray-500">
+                  {isDragging ? 'Release to upload' : 'Click or drag & drop'}
+                </span>
                 <span className="text-xs text-gray-500">PNG or JPG, max 5MB</span>
               </button>
             ) : (
