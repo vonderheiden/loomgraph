@@ -25,22 +25,27 @@ const BannerCanvas: React.FC = () => {
     const calculateScale = () => {
       if (!containerRef.current) return;
 
-      // Get the parent container dimensions (LinkedInStage)
-      const parent = containerRef.current.parentElement;
-      if (!parent) return;
+      // Get the LinkedInStage container (grandparent - the gray background area)
+      const frame = containerRef.current.parentElement; // Inner white frame
+      if (!frame) return;
+      const stage = frame.parentElement; // LinkedInStage (gray area)
+      if (!stage) return;
 
-      // Account for padding in LinkedInStage (p-4 = 16px on each side)
-      const padding = 32; // 16px * 2
-      const availableWidth = parent.clientWidth - padding;
-      const availableHeight = parent.clientHeight - padding;
+      // Account for padding:
+      // - LinkedInStage has p-8 (32px on each side) = 64px total
+      // - Inner frame has p-4 (16px on each side) = 32px total
+      // Total padding to account for: 96px
+      const totalPadding = 96;
+      const availableWidth = stage.clientWidth - totalPadding;
+      const availableHeight = stage.clientHeight - totalPadding;
 
       // Calculate scale factors for both dimensions
       const scaleX = availableWidth / state.dimension.width;
       const scaleY = availableHeight / state.dimension.height;
 
       // Use the smaller scale factor to ensure the banner fits in both dimensions
-      // Apply 0.9 multiplier to leave 10% margin for comfortable viewing
-      const newScale = Math.min(scaleX, scaleY) * 0.9;
+      // Apply 0.85 multiplier to leave 15% margin for comfortable viewing
+      const newScale = Math.min(scaleX, scaleY) * 0.85;
 
       setScaleFactor(newScale);
     };
