@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { useBannerState } from '../../context/BannerContext';
 import ProfessionalTemplate from '../templates/ProfessionalTemplate';
@@ -14,7 +14,7 @@ import PanelTemplate from '../templates/PanelTemplate';
  * - Accordion-style expand/collapse functionality
  * - Sticky positioning at top of screen (z-20)
  * - Mini preview placeholder in collapsed state (h-16)
- * - Full scaled preview when expanded (0.3x scale for mobile)
+ * - Responsive scaling based on viewport width
  * - LinkedIn Stage aesthetic with shadow and border
  * 
  * Requirements: 7.2
@@ -22,6 +22,32 @@ import PanelTemplate from '../templates/PanelTemplate';
 const MobilePreview: React.FC = () => {
   const { state } = useBannerState();
   const [isExpanded, setIsExpanded] = useState(false);
+  const [scaleFactor, setScaleFactor] = useState(0.3);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // Calculate responsive scale factor based on viewport width
+  useEffect(() => {
+    const calculateScale = () => {
+      if (!containerRef.current) return;
+
+      // Get available width (viewport width minus padding)
+      const viewportWidth = window.innerWidth;
+      const padding = 32; // 16px padding on each side
+      const availableWidth = viewportWidth - padding;
+
+      // Calculate scale to fit width, with 0.9 multiplier for comfortable viewing
+      const newScale = (availableWidth / state.dimension.width) * 0.9;
+
+      setScaleFactor(newScale);
+    };
+
+    // Calculate on mount and dimension change
+    calculateScale();
+
+    // Recalculate on window resize
+    window.addEventListener('resize', calculateScale);
+    return () => window.removeEventListener('resize', calculateScale);
+  }, [state.dimension]);
 
   // Template factory - select template based on speaker count
   const renderTemplate = () => {
@@ -48,11 +74,6 @@ const MobilePreview: React.FC = () => {
         return <ProfessionalTemplate {...templateProps} />;
     }
   };
-
-  // Calculate scale factor for mobile preview
-  // Target width: ~300px for mobile screens
-  const mobilePreviewWidth = 300;
-  const scaleFactor = mobilePreviewWidth / state.dimension.width;
 
   return (
     <div 
@@ -83,9 +104,10 @@ const MobilePreview: React.FC = () => {
           className="p-4 bg-[#F3F4F6]"
           role="region"
           aria-label="Banner preview"
+          ref={containerRef}
         >
           <div className="rounded-bento border border-bento-border bg-white shadow-lg p-2 overflow-x-auto">
-            {/* Scaled canvas for mobile */}
+            {/* Responsively scaled canvas for mobile */}
             <div 
               className="transform-gpu mx-auto" 
               style={{ 
