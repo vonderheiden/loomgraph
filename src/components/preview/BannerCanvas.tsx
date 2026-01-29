@@ -85,7 +85,14 @@ const BannerCanvas: React.FC = () => {
   };
 
   return (
-    <div ref={containerRef} className="relative">
+    <div 
+      ref={containerRef} 
+      className="relative"
+      style={{
+        width: `${state.dimension.width * scaleFactor}px`,
+        height: `${state.dimension.height * scaleFactor}px`,
+      }}
+    >
       {isRendering && (
         <div className="absolute inset-0 bg-white/50 flex items-center justify-center z-10">
           <div className="text-sm text-gray-600">Updating...</div>
