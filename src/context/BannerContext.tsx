@@ -25,7 +25,7 @@ const initialState: BannerState = {
   showTimezone: true,
   template: 'professional',
   accentColor: '#a4d233', // Lime green
-  backgroundId: 'color-dark-gray', // Default to dark gray
+  backgroundId: 'image-road-1', // Default to Desert Road
   customBackgroundUrl: null,
   customBackgroundFile: null,
   dimension: BANNER_DIMENSIONS.landscape, // Default to landscape
