@@ -9,10 +9,9 @@ const BrandStyleSection: React.FC = () => {
   const [customBackgroundColor, setCustomBackgroundColor] = useState('#3B82F6');
 
   const presetColors = [
-    { name: 'Electric Blue', value: '#3B82F6' },
-    { name: 'Deep Purple', value: '#8B5CF6' },
-    { name: 'Emerald Green', value: '#10B981' },
-    { name: 'Rose Pink', value: '#F43F5E' },
+    { name: 'Pastel Red', value: '#FFB3BA' },
+    { name: 'Pastel Yellow', value: '#FFFFBA' },
+    { name: 'Pastel Blue', value: '#BAE1FF' },
   ];
 
   // Filter background options to only show road images
@@ -93,7 +92,7 @@ const BrandStyleSection: React.FC = () => {
               <label className="block text-xs font-medium text-gray-600 mb-2">
                 Preset Colors
               </label>
-              <div className="grid grid-cols-4 gap-2" role="group" aria-label="Preset color options">
+              <div className="grid grid-cols-3 gap-2" role="group" aria-label="Preset color options">
                 {presetColors.map((color) => (
                   <button
                     key={color.value}
