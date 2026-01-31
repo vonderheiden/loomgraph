@@ -67,20 +67,36 @@ export function AuthProvider({ children }: AuthProviderProps) {
     setError(null);
 
     try {
+      console.log('[Auth] Starting signup for:', email);
+      
       const { data, error: signupError } = await supabase.auth.signUp({
         email,
         password,
         options: {
           data: {
             name: name || email.split('@')[0]
-          }
+          },
+          emailRedirectTo: `${window.location.origin}/`
         }
       });
 
-      if (signupError) throw signupError;
+      console.log('[Auth] Signup response:', { data, error: signupError });
+
+      if (signupError) {
+        console.error('[Auth] Signup error:', signupError);
+        throw signupError;
+      }
+
+      // Check if email confirmation is required
+      if (data.user && !data.session) {
+        console.log('[Auth] Email confirmation required');
+        setError('Please check your email to confirm your account');
+        return;
+      }
 
       // Create profile record
       if (data.user) {
+        console.log('[Auth] Creating profile for user:', data.user.id);
         const { error: profileError } = await supabase
           .from('profiles')
           .insert({
@@ -97,8 +113,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
       setSession(data.session);
       setUser(data.user);
+      console.log('[Auth] Signup successful');
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Signup failed';
+      console.error('[Auth] Signup exception:', err);
       setError(errorMessage);
       throw new Error(errorMessage);
     } finally {
@@ -111,17 +129,26 @@ export function AuthProvider({ children }: AuthProviderProps) {
     setError(null);
 
     try {
+      console.log('[Auth] Starting login for:', email);
+      
       const { data, error: loginError } = await supabase.auth.signInWithPassword({
         email,
         password
       });
 
-      if (loginError) throw loginError;
+      console.log('[Auth] Login response:', { data, error: loginError });
+
+      if (loginError) {
+        console.error('[Auth] Login error:', loginError);
+        throw loginError;
+      }
 
       setSession(data.session);
       setUser(data.user);
+      console.log('[Auth] Login successful');
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Login failed';
+      console.error('[Auth] Login exception:', err);
       setError(errorMessage);
       throw new Error(errorMessage);
     } finally {

@@ -64,10 +64,14 @@ export function AuthModal({ isOpen, onClose, onSuccess, mode: initialMode = 'log
     if (!validateForm()) return;
 
     try {
+      console.log('[AuthModal] Submitting form, mode:', mode);
+      
       if (mode === 'signup') {
         await signup(email, password, name);
+        console.log('[AuthModal] Signup completed');
       } else {
         await login(email, password);
+        console.log('[AuthModal] Login completed');
       }
 
       // Success - close modal and call onSuccess callback
