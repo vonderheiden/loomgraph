@@ -46,10 +46,14 @@ function App() {
             {/* Generator Header with Auth */}
             <div className="fixed top-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-b border-gray-200 z-40 h-16">
               <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex justify-between items-center">
-                {/* Logo */}
-                <div className="flex items-center gap-2">
+                {/* Logo - Clickable to return to landing page */}
+                <button
+                  onClick={() => setCurrentView('landing')}
+                  className="flex items-center gap-2 group transition-opacity duration-200 hover:opacity-70"
+                  aria-label="Return to home page"
+                >
                   <span className="text-xl font-bold text-gray-900">LoomGraph</span>
-                </div>
+                </button>
                 
                 {/* User Menu */}
                 <UserMenu />

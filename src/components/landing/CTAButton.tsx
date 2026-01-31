@@ -41,6 +41,7 @@ export function CTAButton({
     focus:outline-none focus:ring-2 focus:ring-offset-2
     active:scale-[0.98] transform
     disabled:opacity-60 disabled:cursor-not-allowed disabled:active:scale-100
+    flex items-center justify-center
   `.trim().replace(/\s+/g, ' ');
   
   // Variant-specific styles: sophisticated colors and depth
