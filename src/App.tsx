@@ -43,13 +43,21 @@ function App() {
       {currentView === 'generator' && (
         <BannerProvider>
           <div className="min-h-screen bg-bento-bg">
-            {/* User Menu - Top right corner */}
-            <div className="fixed top-4 right-4 z-40">
-              <UserMenu />
+            {/* Generator Header with Auth */}
+            <div className="fixed top-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-b border-gray-200 z-40 h-16">
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex justify-between items-center">
+                {/* Logo */}
+                <div className="flex items-center gap-2">
+                  <span className="text-xl font-bold text-gray-900">LoomGraph</span>
+                </div>
+                
+                {/* User Menu */}
+                <UserMenu />
+              </div>
             </div>
 
-            {/* Two-column layout: 35% form, 65% preview */}
-            <div className="flex flex-col lg:flex-row min-h-screen" data-testid="generator-layout">
+            {/* Two-column layout: 35% form, 65% preview - Add top padding for fixed header */}
+            <div className="flex flex-col lg:flex-row min-h-screen pt-16" data-testid="generator-layout">
               {/* Mobile Preview - Only visible on mobile (<768px) */}
               <MobilePreview />
 
