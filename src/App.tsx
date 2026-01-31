@@ -1,10 +1,12 @@
 import { useState, useCallback } from 'react';
+import { AuthProvider } from './context/AuthContext';
 import { BannerProvider } from './context/BannerContext';
 import FormPanel from './components/FormPanel';
 import PreviewPanel from './components/preview/PreviewPanel';
 import MobilePreview from './components/preview/MobilePreview';
 import FloatingActionButton from './components/preview/FloatingActionButton';
 import { LandingPage } from './components/landing/LandingPage';
+import { UserMenu } from './components/auth/UserMenu';
 import type { ViewType } from './types/landing.types';
 
 /**
@@ -31,7 +33,7 @@ function App() {
   }, []);
 
   return (
-    <>
+    <AuthProvider>
       {/* Landing Page View */}
       {currentView === 'landing' && (
         <LandingPage onNavigate={navigateToGenerator} />
@@ -41,6 +43,11 @@ function App() {
       {currentView === 'generator' && (
         <BannerProvider>
           <div className="min-h-screen bg-bento-bg">
+            {/* User Menu - Top right corner */}
+            <div className="fixed top-4 right-4 z-40">
+              <UserMenu />
+            </div>
+
             {/* Two-column layout: 35% form, 65% preview */}
             <div className="flex flex-col lg:flex-row min-h-screen" data-testid="generator-layout">
               {/* Mobile Preview - Only visible on mobile (<768px) */}
@@ -58,7 +65,7 @@ function App() {
           </div>
         </BannerProvider>
       )}
-    </>
+    </AuthProvider>
   );
 }
 

@@ -2,7 +2,10 @@ import React, { useState } from 'react';
 import { Download, Check, AlertCircle } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import { useBannerState } from '../../context/BannerContext';
+import { useAuth } from '../../context/AuthContext';
 import { generateFileName, downloadBlob } from '../../utils/exportHelpers';
+import { saveBanner } from '../../services/bannerStorage';
+import { AuthModal } from '../auth/AuthModal';
 
 interface ExportButtonProps {
   variant?: 'full' | 'compact';
@@ -10,14 +13,29 @@ interface ExportButtonProps {
 
 const ExportButton: React.FC<ExportButtonProps> = ({ variant = 'full' }) => {
   const { state } = useBannerState();
+  const { isAuthenticated } = useAuth();
   const [isExporting, setIsExporting] = useState(false);
   const [exportSuccess, setExportSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [pendingExport, setPendingExport] = useState(false);
 
   const handleExport = async () => {
+    // Check authentication first
+    if (!isAuthenticated) {
+      setShowAuthModal(true);
+      setPendingExport(true);
+      return;
+    }
+
+    await performExport();
+  };
+
+  const performExport = async () => {
     setIsExporting(true);
     setExportSuccess(false);
     setError(null);
+    setPendingExport(false);
 
     try {
       // Get the banner template element
@@ -116,9 +134,23 @@ const ExportButton: React.FC<ExportButtonProps> = ({ variant = 'full' }) => {
         throw new Error('Generated image has no data');
       }
 
-      // Generate filename and download
+      // Generate filename and download locally
       const filename = generateFileName(state.title, state.dimension);
       downloadBlob(blob, filename);
+
+      // Save to Supabase
+      try {
+        await saveBanner({
+          title: state.title || 'Untitled Banner',
+          dimension: state.dimension.label.toLowerCase() as 'landscape' | 'square' | 'portrait',
+          imageBlob: blob,
+          bannerState: state
+        });
+        console.log('[Export] Banner saved to Supabase successfully');
+      } catch (saveError) {
+        console.error('[Export] Failed to save to Supabase:', saveError);
+        // Don't fail the export if cloud save fails - local download already succeeded
+      }
 
       // Show success state
       setExportSuccess(true);
@@ -146,21 +178,29 @@ const ExportButton: React.FC<ExportButtonProps> = ({ variant = 'full' }) => {
     }
   };
 
+  const handleAuthSuccess = () => {
+    setShowAuthModal(false);
+    if (pendingExport) {
+      performExport();
+    }
+  };
+
   return (
-    <div className={variant === 'full' ? 'space-y-2' : ''}>
-      <button
-        onClick={handleExport}
-        disabled={isExporting}
-        className={`${
-          variant === 'full' ? 'w-full py-4 px-6 min-h-[56px]' : 'py-3 px-4 min-h-[44px] lg:py-2 lg:min-h-[40px]'
-        } rounded-bento font-semibold text-white transition-all flex items-center justify-center gap-2 ${
-          exportSuccess
-            ? 'bg-green-500 hover:bg-green-600'
-            : error
-            ? 'bg-red-500 hover:bg-red-600'
-            : 'bg-action-primary hover:bg-blue-600'
-        } ${isExporting ? 'opacity-75 cursor-not-allowed' : ''}`}
-      >
+    <>
+      <div className={variant === 'full' ? 'space-y-2' : ''}>
+        <button
+          onClick={handleExport}
+          disabled={isExporting}
+          className={`${
+            variant === 'full' ? 'w-full py-4 px-6 min-h-[56px]' : 'py-3 px-4 min-h-[44px] lg:py-2 lg:min-h-[40px]'
+          } rounded-bento font-semibold text-white transition-all flex items-center justify-center gap-2 ${
+            exportSuccess
+              ? 'bg-green-500 hover:bg-green-600'
+              : error
+              ? 'bg-red-500 hover:bg-red-600'
+              : 'bg-action-primary hover:bg-blue-600'
+          } ${isExporting ? 'opacity-75 cursor-not-allowed' : ''}`}
+        >
         {isExporting ? (
           <>
             <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -182,18 +222,30 @@ const ExportButton: React.FC<ExportButtonProps> = ({ variant = 'full' }) => {
             {variant === 'full' ? <span>Download Banner</span> : <span>Export</span>}
           </>
         )}
-      </button>
-      {variant === 'full' && error && (
-        <p className="text-xs text-red-600 text-center">
-          Export failed. Check console for details.
-        </p>
-      )}
-      {variant === 'full' && isExporting && (
-        <p className="text-xs text-gray-600 text-center">
-          Please wait while we generate your banner...
-        </p>
-      )}
-    </div>
+        </button>
+        {variant === 'full' && error && (
+          <p className="text-xs text-red-600 text-center">
+            Export failed. Check console for details.
+          </p>
+        )}
+        {variant === 'full' && isExporting && (
+          <p className="text-xs text-gray-600 text-center">
+            Please wait while we generate your banner...
+          </p>
+        )}
+      </div>
+
+      {/* Auth Modal */}
+      <AuthModal
+        isOpen={showAuthModal}
+        onClose={() => {
+          setShowAuthModal(false);
+          setPendingExport(false);
+        }}
+        onSuccess={handleAuthSuccess}
+        mode="signup"
+      />
+    </>
   );
 };
 
