@@ -119,7 +119,7 @@ export function Header({ onNavigate }: NavigationProps) {
                 <>
                   <button
                     onClick={() => handleAuthClick('login')}
-                    className="hidden sm:block text-gray-600 hover:text-gray-900 transition-colors px-4 py-2 rounded-bento font-medium"
+                    className="hidden sm:block text-[#1d1d1f] hover:text-[#0071e3] transition-colors px-4 py-2 rounded-full font-medium text-[15px] tracking-tight"
                   >
                     Sign In
                   </button>

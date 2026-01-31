@@ -137,7 +137,7 @@ export function AuthModal({ isOpen, onClose, onSuccess, mode: initialMode = 'log
         <button
           onClick={handleGoogleLogin}
           disabled={isLoading}
-          className="w-full py-3 px-4 border border-gray-300 rounded-bento font-medium text-gray-700 hover:bg-gray-50 transition-colors flex items-center justify-center gap-2 mb-4"
+          className="w-full h-[48px] px-4 border border-[#d2d2d7] rounded-full font-medium text-[15px] tracking-tight text-[#1d1d1f] hover:bg-[#f5f5f7] hover:border-[#b8b8bd] transition-all duration-200 ease-out flex items-center justify-center gap-2.5 shadow-[0_1px_2px_rgba(0,0,0,0.04)] hover:shadow-[0_2px_4px_rgba(0,0,0,0.06)] active:scale-[0.98] transform disabled:opacity-60 disabled:cursor-not-allowed disabled:active:scale-100 mb-4"
         >
           <svg className="w-5 h-5" viewBox="0 0 24 24">
             <path
@@ -234,7 +234,7 @@ export function AuthModal({ isOpen, onClose, onSuccess, mode: initialMode = 'log
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full py-3 px-4 bg-action-primary hover:bg-blue-600 text-white font-semibold rounded-bento transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full h-[48px] px-4 bg-gradient-to-b from-[#0071e3] to-[#0077ED] hover:from-[#0077ED] hover:to-[#007AFF] text-white font-medium text-[15px] tracking-tight rounded-full transition-all duration-200 ease-out shadow-[0_1px_2px_rgba(0,0,0,0.12),0_2px_4px_rgba(0,0,0,0.08)] hover:shadow-[0_2px_4px_rgba(0,0,0,0.15),0_4px_8px_rgba(0,0,0,0.1)] active:scale-[0.98] transform disabled:opacity-60 disabled:cursor-not-allowed disabled:active:scale-100 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:ring-offset-2"
           >
             {isLoading ? 'Processing...' : mode === 'login' ? 'Sign In' : 'Sign Up'}
           </button>
@@ -247,7 +247,7 @@ export function AuthModal({ isOpen, onClose, onSuccess, mode: initialMode = 'log
               Don't have an account?{' '}
               <button
                 onClick={toggleMode}
-                className="text-action-primary hover:underline font-medium"
+                className="text-[#0071e3] hover:text-[#0077ED] hover:underline font-medium transition-colors"
               >
                 Sign up
               </button>
@@ -257,7 +257,7 @@ export function AuthModal({ isOpen, onClose, onSuccess, mode: initialMode = 'log
               Already have an account?{' '}
               <button
                 onClick={toggleMode}
-                className="text-action-primary hover:underline font-medium"
+                className="text-[#0071e3] hover:text-[#0077ED] hover:underline font-medium transition-colors"
               >
                 Sign in
               </button>

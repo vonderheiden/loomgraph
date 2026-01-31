@@ -191,15 +191,23 @@ const ExportButton: React.FC<ExportButtonProps> = ({ variant = 'full' }) => {
         <button
           onClick={handleExport}
           disabled={isExporting}
-          className={`${
-            variant === 'full' ? 'w-full py-4 px-6 min-h-[56px]' : 'py-3 px-4 min-h-[44px] lg:py-2 lg:min-h-[40px]'
-          } rounded-bento font-semibold text-white transition-all flex items-center justify-center gap-2 ${
-            exportSuccess
-              ? 'bg-green-500 hover:bg-green-600'
-              : error
-              ? 'bg-red-500 hover:bg-red-600'
-              : 'bg-action-primary hover:bg-blue-600'
-          } ${isExporting ? 'opacity-75 cursor-not-allowed' : ''}`}
+          className={`
+            ${variant === 'full' ? 'w-full px-6 h-[52px]' : 'px-5 h-[44px] lg:h-[40px]'}
+            rounded-full font-medium tracking-tight text-white 
+            transition-all duration-200 ease-out
+            flex items-center justify-center gap-2.5
+            focus:outline-none focus:ring-2 focus:ring-offset-2
+            active:scale-[0.98] transform
+            shadow-[0_1px_2px_rgba(0,0,0,0.12),0_2px_4px_rgba(0,0,0,0.08)]
+            ${
+              exportSuccess
+                ? 'bg-gradient-to-b from-[#34c759] to-[#30d158] hover:from-[#30d158] hover:to-[#32d74b] focus:ring-green-500/50'
+                : error
+                ? 'bg-gradient-to-b from-[#ff3b30] to-[#ff453a] hover:from-[#ff453a] hover:to-[#ff4f44] focus:ring-red-500/50'
+                : 'bg-gradient-to-b from-[#0071e3] to-[#0077ED] hover:from-[#0077ED] hover:to-[#007AFF] focus:ring-blue-500/50'
+            }
+            ${isExporting ? 'opacity-60 cursor-not-allowed active:scale-100' : 'hover:shadow-[0_2px_4px_rgba(0,0,0,0.15),0_4px_8px_rgba(0,0,0,0.1)]'}
+          `}
         >
         {isExporting ? (
           <>
