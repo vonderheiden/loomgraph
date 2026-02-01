@@ -92,21 +92,25 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
       console.log('[Auth] Signup response:', authData);
 
-      // Authenticate the user
+      // Authenticate the user immediately after creation
       const authResponse = await pb.collection('users').authWithPassword(email, password);
       const authUser = authResponse.record as unknown as User;
 
-      // Create profile record
-      console.log('[Auth] Creating profile for user:', authUser.id);
+      console.log('[Auth] Authentication successful, user ID:', authUser.id);
+
+      // Create profile record - now that user is authenticated
+      console.log('[Auth] Creating profile for authenticated user:', authUser.id);
       try {
         await pb.collection('profiles').create({
           user: authUser.id,
-          company_name: null,
+          company_name: '',
           brand_color: '#6366f1',
-          logo_url: null
+          logo_url: ''
         });
+        console.log('[Auth] Profile created successfully');
       } catch (profileErr) {
         console.error('[Auth] Failed to create profile:', profileErr);
+        // Don't fail signup if profile creation fails - user can still use the app
       }
 
       setSession(authResponse as unknown as RecordAuthResponse<User>);
