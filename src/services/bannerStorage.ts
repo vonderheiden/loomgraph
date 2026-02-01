@@ -1,4 +1,5 @@
-import { supabase } from '../lib/supabase';
+import { pb } from '../lib/pocketbase';
+import type { GeneratedAsset } from '../lib/pocketbase';
 import type { BannerState } from '../types/banner.types';
 
 export interface SaveBannerParams {
@@ -10,50 +11,32 @@ export interface SaveBannerParams {
 
 export interface SavedBanner {
   id: string;
-  user_id: string;
+  user: string;
   asset_type: string;
   template_id: string;
   content: Record<string, unknown>;
   title_preview: string;
-  image_url: string;
-  created_at: string;
+  image: string;
+  created: string;
+  updated: string;
 }
 
 /**
- * Save a banner to Supabase storage and database
+ * Save a banner to PocketBase storage and database
  */
 export async function saveBanner(params: SaveBannerParams): Promise<SavedBanner> {
   const { title, imageBlob, bannerState } = params;
 
   // Get current user
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) {
+  if (!pb.authStore.isValid || !pb.authStore.model) {
     throw new Error('User must be authenticated to save banners');
   }
 
+  const userId = pb.authStore.model.id;
+
   // Generate unique filename
   const timestamp = Date.now();
-  const filename = `banner-${user.id}-${timestamp}.png`;
-  const filePath = `banners/${user.id}/${filename}`;
-
-  // Upload image to Supabase Storage
-  const { error: uploadError } = await supabase.storage
-    .from('generated-assets')
-    .upload(filePath, imageBlob, {
-      contentType: 'image/png',
-      cacheControl: '3600',
-      upsert: false
-    });
-
-  if (uploadError) {
-    console.error('[BannerStorage] Upload error:', uploadError);
-    throw new Error(`Failed to upload banner image: ${uploadError.message}`);
-  }
-
-  // Get public URL for the uploaded image
-  const { data: { publicUrl } } = supabase.storage
-    .from('generated-assets')
-    .getPublicUrl(filePath);
+  const filename = `banner-${userId}-${timestamp}.png`;
 
   // Prepare metadata
   const metadata = {
@@ -79,100 +62,82 @@ export async function saveBanner(params: SaveBannerParams): Promise<SavedBanner>
     }
   };
 
-  // Insert record into database
-  const { data: record, error: dbError } = await supabase
-    .from('generated_assets')
-    .insert({
-      user_id: user.id,
-      asset_type: 'webinar_banner',
-      template_id: bannerState.template,
-      content: metadata,
-      title_preview: title || 'Untitled Banner',
-      image_url: publicUrl
-    })
-    .select()
-    .single();
+  // Create FormData for file upload
+  const formData = new FormData();
+  formData.append('user', userId);
+  formData.append('asset_type', 'webinar_banner');
+  formData.append('template_id', bannerState.template);
+  formData.append('content', JSON.stringify(metadata));
+  formData.append('title_preview', title || 'Untitled Banner');
+  formData.append('image', new File([imageBlob], filename, { type: 'image/png' }));
 
-  if (dbError) {
-    console.error('[BannerStorage] Database error:', dbError);
-    // Try to clean up uploaded file
-    await supabase.storage.from('generated-assets').remove([filePath]);
-    throw new Error(`Failed to save banner record: ${dbError.message}`);
+  try {
+    // Create record with file upload
+    const record = await pb.collection('generated_assets').create<GeneratedAsset>(formData);
+    
+    console.log('[BannerStorage] Banner saved successfully:', record.id);
+    return record as SavedBanner;
+  } catch (error) {
+    console.error('[BannerStorage] Save error:', error);
+    throw new Error(`Failed to save banner: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
-
-  return record;
 }
 
 /**
  * Get all banners for the current user
  */
 export async function getUserBanners(): Promise<SavedBanner[]> {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) {
+  if (!pb.authStore.isValid || !pb.authStore.model) {
     throw new Error('User must be authenticated to retrieve banners');
   }
 
-  const { data, error } = await supabase
-    .from('generated_assets')
-    .select('*')
-    .eq('user_id', user.id)
-    .eq('asset_type', 'webinar_banner')
-    .order('created_at', { ascending: false });
+  const userId = pb.authStore.model.id;
 
-  if (error) {
+  try {
+    const records = await pb.collection('generated_assets').getFullList<GeneratedAsset>({
+      filter: `user = "${userId}" && asset_type = "webinar_banner"`,
+      sort: '-created'
+    });
+
+    return records as SavedBanner[];
+  } catch (error) {
     console.error('[BannerStorage] Fetch error:', error);
-    throw new Error(`Failed to fetch banners: ${error.message}`);
+    throw new Error(`Failed to fetch banners: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
-
-  return data || [];
 }
 
 /**
  * Delete a banner
  */
 export async function deleteBanner(bannerId: string): Promise<void> {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) {
+  if (!pb.authStore.isValid || !pb.authStore.model) {
     throw new Error('User must be authenticated to delete banners');
   }
 
-  // Get banner record to find image path
-  const { data: banner, error: fetchError } = await supabase
-    .from('generated_assets')
-    .select('image_url, user_id')
-    .eq('id', bannerId)
-    .single();
+  const userId = pb.authStore.model.id;
 
-  if (fetchError) {
-    throw new Error(`Failed to fetch banner: ${fetchError.message}`);
+  try {
+    // Get banner record to verify ownership
+    const banner = await pb.collection('generated_assets').getOne<GeneratedAsset>(bannerId);
+
+    // Verify ownership
+    if (banner.user !== userId) {
+      throw new Error('You do not have permission to delete this banner');
+    }
+
+    // Delete record (PocketBase automatically deletes associated files)
+    await pb.collection('generated_assets').delete(bannerId);
+    
+    console.log('[BannerStorage] Banner deleted successfully:', bannerId);
+  } catch (error) {
+    console.error('[BannerStorage] Delete error:', error);
+    throw new Error(`Failed to delete banner: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
+}
 
-  // Verify ownership
-  if (banner.user_id !== user.id) {
-    throw new Error('You do not have permission to delete this banner');
-  }
-
-  // Extract file path from URL
-  const urlParts = banner.image_url.split('/');
-  const filePath = `banners/${user.id}/${urlParts[urlParts.length - 1]}`;
-
-  // Delete from storage
-  const { error: storageError } = await supabase.storage
-    .from('generated-assets')
-    .remove([filePath]);
-
-  if (storageError) {
-    console.error('[BannerStorage] Storage deletion error:', storageError);
-  }
-
-  // Delete from database
-  const { error: dbError } = await supabase
-    .from('generated_assets')
-    .delete()
-    .eq('id', bannerId)
-    .eq('user_id', user.id);
-
-  if (dbError) {
-    throw new Error(`Failed to delete banner: ${dbError.message}`);
-  }
+/**
+ * Get the URL for a banner image
+ */
+export function getBannerImageUrl(record: SavedBanner): string {
+  return pb.files.getUrl(record, record.image);
 }

@@ -1,0 +1,79 @@
+{
+  "collections": [
+    {
+      "name": "generated_assets",
+      "type": "base",
+      "system": false,
+      "listRule": "@request.auth.id != \"\" && user = @request.auth.id",
+      "viewRule": "@request.auth.id != \"\" && user = @request.auth.id",
+      "createRule": "@request.auth.id != \"\"",
+      "updateRule": "@request.auth.id != \"\" && user = @request.auth.id",
+      "deleteRule": "@request.auth.id != \"\" && user = @request.auth.id",
+      "indexes": [
+        "CREATE INDEX `idx_user_asset_type` ON `generated_assets` (`user`, `asset_type`)",
+        "CREATE INDEX `idx_created` ON `generated_assets` (`created`)"
+      ],
+      "fields": [
+        {
+          "name": "id",
+          "type": "text",
+          "system": true,
+          "required": true,
+          "min": 15,
+          "max": 15,
+          "pattern": "^[a-z0-9]+$",
+          "autogeneratePattern": "[a-z0-9]{15}",
+          "primaryKey": true
+        },
+        {
+          "name": "user",
+          "type": "relation",
+          "system": false,
+          "required": true,
+          "collectionId": "_pb_users_auth_",
+          "cascadeDelete": true,
+          "minSelect": 1,
+          "maxSelect": 1
+        },
+        {
+          "name": "asset_type",
+          "type": "text",
+          "system": false,
+          "required": true
+        },
+        {
+          "name": "template_id",
+          "type": "text",
+          "system": false,
+          "required": true
+        },
+        {
+          "name": "content",
+          "type": "json",
+          "system": false,
+          "required": true
+        },
+        {
+          "name": "title_preview",
+          "type": "text",
+          "system": false,
+          "required": true
+        },
+        {
+          "name": "image",
+          "type": "file",
+          "system": false,
+          "required": true,
+          "maxSelect": 1,
+          "maxSize": 5242880,
+          "mimeTypes": [
+            "image/jpeg",
+            "image/png",
+            "image/gif",
+            "image/webp"
+          ]
+        }
+      ]
+    }
+  ]
+}

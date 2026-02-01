@@ -1,12 +1,13 @@
 import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
-import { supabase } from '../lib/supabase';
-import type { User, Session } from '@supabase/supabase-js';
+import { pb } from '../lib/pocketbase';
+import type { User } from '../lib/pocketbase';
+import type { RecordAuthResponse } from 'pocketbase';
 
 /* eslint-disable react-refresh/only-export-components */
 
 interface AuthContextValue {
   user: User | null;
-  session: Session | null;
+  session: RecordAuthResponse<User> | null;
   isAuthenticated: boolean;
   isLoading: boolean;
   error: string | null;
@@ -31,17 +32,23 @@ interface AuthProviderProps {
 
 export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<User | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
+  const [session, setSession] = useState<RecordAuthResponse<User> | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   // Initialize auth state on mount
   useEffect(() => {
-    const initAuth = async () => {
+    const initAuth = () => {
       try {
-        const { data: { session: currentSession } } = await supabase.auth.getSession();
-        setSession(currentSession);
-        setUser(currentSession?.user ?? null);
+        // Check if there's a valid auth store
+        if (pb.authStore.isValid && pb.authStore.model) {
+          const authModel = pb.authStore.model as unknown as User;
+          setUser(authModel);
+          setSession({
+            token: pb.authStore.token,
+            record: authModel
+          } as RecordAuthResponse<User>);
+        }
       } catch (err) {
         console.error('[Auth] Failed to get session:', err);
       } finally {
@@ -52,14 +59,19 @@ export function AuthProvider({ children }: AuthProviderProps) {
     initAuth();
 
     // Subscribe to auth state changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, newSession) => {
-      setSession(newSession);
-      setUser(newSession?.user ?? null);
+    pb.authStore.onChange(() => {
+      if (pb.authStore.isValid && pb.authStore.model) {
+        const authModel = pb.authStore.model as unknown as User;
+        setUser(authModel);
+        setSession({
+          token: pb.authStore.token,
+          record: authModel
+        } as RecordAuthResponse<User>);
+      } else {
+        setUser(null);
+        setSession(null);
+      }
     });
-
-    return () => {
-      subscription.unsubscribe();
-    };
   }, []);
 
   const signup = useCallback(async (email: string, password: string, name?: string) => {
@@ -69,50 +81,36 @@ export function AuthProvider({ children }: AuthProviderProps) {
     try {
       console.log('[Auth] Starting signup for:', email);
       
-      const { data, error: signupError } = await supabase.auth.signUp({
+      // Create user account
+      const authData = await pb.collection('users').create({
         email,
         password,
-        options: {
-          data: {
-            name: name || email.split('@')[0]
-          },
-          emailRedirectTo: `${window.location.origin}/`
-        }
+        passwordConfirm: password,
+        name: name || email.split('@')[0],
+        emailVisibility: true
       });
 
-      console.log('[Auth] Signup response:', { data, error: signupError });
+      console.log('[Auth] Signup response:', authData);
 
-      if (signupError) {
-        console.error('[Auth] Signup error:', signupError);
-        throw signupError;
-      }
-
-      // Check if email confirmation is required
-      if (data.user && !data.session) {
-        console.log('[Auth] Email confirmation required');
-        setError('Please check your email to confirm your account');
-        return;
-      }
+      // Authenticate the user
+      const authResponse = await pb.collection('users').authWithPassword(email, password);
+      const authUser = authResponse.record as unknown as User;
 
       // Create profile record
-      if (data.user) {
-        console.log('[Auth] Creating profile for user:', data.user.id);
-        const { error: profileError } = await supabase
-          .from('profiles')
-          .insert({
-            id: data.user.id,
-            company_name: null,
-            brand_color: '#6366f1',
-            logo_url: null
-          });
-
-        if (profileError) {
-          console.error('[Auth] Failed to create profile:', profileError);
-        }
+      console.log('[Auth] Creating profile for user:', authUser.id);
+      try {
+        await pb.collection('profiles').create({
+          user: authUser.id,
+          company_name: null,
+          brand_color: '#6366f1',
+          logo_url: null
+        });
+      } catch (profileErr) {
+        console.error('[Auth] Failed to create profile:', profileErr);
       }
 
-      setSession(data.session);
-      setUser(data.user);
+      setSession(authResponse as unknown as RecordAuthResponse<User>);
+      setUser(authUser);
       console.log('[Auth] Signup successful');
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Signup failed';
@@ -131,20 +129,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
     try {
       console.log('[Auth] Starting login for:', email);
       
-      const { data, error: loginError } = await supabase.auth.signInWithPassword({
-        email,
-        password
-      });
+      const authResponse = await pb.collection('users').authWithPassword(email, password);
 
-      console.log('[Auth] Login response:', { data, error: loginError });
+      console.log('[Auth] Login response:', authResponse);
 
-      if (loginError) {
-        console.error('[Auth] Login error:', loginError);
-        throw loginError;
-      }
-
-      setSession(data.session);
-      setUser(data.user);
+      const authUser = authResponse.record as unknown as User;
+      setSession(authResponse as unknown as RecordAuthResponse<User>);
+      setUser(authUser);
       console.log('[Auth] Login successful');
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Login failed';
@@ -161,14 +152,20 @@ export function AuthProvider({ children }: AuthProviderProps) {
     setError(null);
 
     try {
-      const { error: oauthError } = await supabase.auth.signInWithOAuth({
+      // Initiate OAuth2 flow with Google
+      const authData = await pb.collection('users').authWithOAuth2({
         provider: 'google',
-        options: {
-          redirectTo: `${window.location.origin}/`
+        urlCallback: (url) => {
+          // Open OAuth2 URL in current window
+          window.location.href = url;
         }
       });
 
-      if (oauthError) throw oauthError;
+      if (authData) {
+        const authUser = authData.record as unknown as User;
+        setSession(authData as unknown as RecordAuthResponse<User>);
+        setUser(authUser);
+      }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Google login failed';
       setError(errorMessage);
@@ -179,14 +176,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   const logout = useCallback(async () => {
     try {
-      const { error: logoutError } = await supabase.auth.signOut();
-      if (logoutError) throw logoutError;
-
+      pb.authStore.clear();
       setSession(null);
       setUser(null);
     } catch (err) {
       console.error('[Auth] Logout error:', err);
-      // Clear local state even if server logout fails
+      // Clear local state even if logout fails
       setSession(null);
       setUser(null);
     }

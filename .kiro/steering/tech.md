@@ -7,6 +7,7 @@
 - **Tailwind CSS 4** - Utility-first styling with custom Bento theme
 - **html-to-image** - Canvas-to-PNG export functionality
 - **Lucide React** - Icon library
+- **PocketBase** - Backend database and authentication
 
 ## Build System
 - **Package Manager**: npm
@@ -39,6 +40,7 @@ TypeScript strict mode enabled with:
 - `react` + `react-dom` - UI framework
 - `html-to-image` - Export functionality
 - `lucide-react` - Icons
+- `pocketbase` - Backend SDK for authentication and data storage
 
 ## Dev Dependencies
 - `@vitejs/plugin-react` - Vite React plugin

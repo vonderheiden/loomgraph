@@ -1,0 +1,192 @@
+{
+  "collections": [
+    {
+      "name": "users",
+      "type": "auth",
+      "system": false,
+      "listRule": "id = @request.auth.id",
+      "viewRule": "id = @request.auth.id",
+      "createRule": "",
+      "updateRule": "id = @request.auth.id",
+      "deleteRule": "@request.auth.id = id",
+      "indexes": [
+        "CREATE UNIQUE INDEX `idx_tokenKey` ON `users` (`tokenKey`)",
+        "CREATE UNIQUE INDEX `idx_email` ON `users` (`email`) WHERE `email` != ''"
+      ],
+      "fields": [
+        {
+          "name": "id",
+          "type": "text",
+          "system": true,
+          "required": true,
+          "min": 15,
+          "max": 15,
+          "pattern": "^[a-z0-9]+$",
+          "autogeneratePattern": "[a-z0-9]{15}",
+          "primaryKey": true
+        },
+        {
+          "name": "email",
+          "type": "email",
+          "system": true,
+          "required": true
+        },
+        {
+          "name": "emailVisibility",
+          "type": "bool",
+          "system": true
+        },
+        {
+          "name": "verified",
+          "type": "bool",
+          "system": true
+        },
+        {
+          "name": "password",
+          "type": "password",
+          "system": true,
+          "hidden": true
+        },
+        {
+          "name": "tokenKey",
+          "type": "text",
+          "system": true,
+          "hidden": true,
+          "required": true,
+          "min": 30,
+          "max": 60,
+          "autogeneratePattern": "[a-zA-Z0-9]{50}"
+        },
+        {
+          "name": "name",
+          "type": "text",
+          "system": false,
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "profiles",
+      "type": "base",
+      "system": false,
+      "listRule": "@request.auth.id != \"\" && user = @request.auth.id",
+      "viewRule": "@request.auth.id != \"\" && user = @request.auth.id",
+      "createRule": "@request.auth.id != \"\"",
+      "updateRule": "@request.auth.id != \"\" && user = @request.auth.id",
+      "deleteRule": "@request.auth.id != \"\" && user = @request.auth.id",
+      "indexes": [
+        "CREATE UNIQUE INDEX `idx_user` ON `profiles` (`user`)"
+      ],
+      "fields": [
+        {
+          "name": "id",
+          "type": "text",
+          "system": true,
+          "required": true,
+          "min": 15,
+          "max": 15,
+          "pattern": "^[a-z0-9]+$",
+          "autogeneratePattern": "[a-z0-9]{15}",
+          "primaryKey": true
+        },
+        {
+          "name": "user",
+          "type": "relation",
+          "system": false,
+          "required": true,
+          "collectionId": "_pb_users_auth_",
+          "cascadeDelete": true,
+          "minSelect": 1,
+          "maxSelect": 1
+        },
+        {
+          "name": "company_name",
+          "type": "text",
+          "system": false,
+          "required": false
+        },
+        {
+          "name": "brand_color",
+          "type": "text",
+          "system": false,
+          "required": false
+        },
+        {
+          "name": "logo_url",
+          "type": "text",
+          "system": false,
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "generated_assets",
+      "type": "base",
+      "system": false,
+      "listRule": "@request.auth.id != \"\" && user = @request.auth.id",
+      "viewRule": "@request.auth.id != \"\" && user = @request.auth.id",
+      "createRule": "@request.auth.id != \"\"",
+      "updateRule": "@request.auth.id != \"\" && user = @request.auth.id",
+      "deleteRule": "@request.auth.id != \"\" && user = @request.auth.id",
+      "indexes": [
+        "CREATE INDEX `idx_user_asset_type` ON `generated_assets` (`user`, `asset_type`)",
+        "CREATE INDEX `idx_created_at` ON `generated_assets` (`created_at`)"
+      ],
+      "fields": [
+        {
+          "name": "id",
+          "type": "text",
+          "system": true,
+          "required": true,
+          "min": 15,
+          "max": 15,
+          "pattern": "^[a-z0-9]+$",
+          "autogeneratePattern": "[a-z0-9]{15}",
+          "primaryKey": true
+        },
+        {
+          "name": "user",
+          "type": "relation",
+          "system": false,
+          "required": true,
+          "collectionId": "_pb_users_auth_",
+          "cascadeDelete": true,
+          "minSelect": 1,
+          "maxSelect": 1
+        },
+        {
+          "name": "asset_type",
+          "type": "text",
+          "system": false,
+          "required": true
+        },
+        {
+          "name": "template_id",
+          "type": "text",
+          "system": false,
+          "required": true
+        },
+        {
+          "name": "content",
+          "type": "json",
+          "system": false,
+          "required": true
+        },
+        {
+          "name": "title_preview",
+          "type": "text",
+          "system": false,
+          "required": true
+        },
+        {
+          "name": "image",
+          "type": "file",
+          "system": false,
+          "required": true,
+          "maxSelect": 1,
+          "maxSize": 5242880
+        }
+      ]
+    }
+  ]
+}

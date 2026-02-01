@@ -59,7 +59,7 @@ export function UserMenu({ className = '' }: UserMenuProps) {
     return null;
   }
 
-  const displayName = user.user_metadata?.name || user.email?.split('@')[0] || 'User';
+  const displayName = user.name || user.email?.split('@')[0] || 'User';
   const displayEmail = user.email || '';
 
   return (
