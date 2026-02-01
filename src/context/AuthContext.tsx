@@ -80,8 +80,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
     try {
       console.log('[Auth] Starting signup for:', email);
+      console.log('[Auth] PocketBase URL:', pb.baseUrl);
       
       // Create user account
+      console.log('[Auth] Creating user account...');
       const authData = await pb.collection('users').create({
         email,
         password,
@@ -90,9 +92,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
         emailVisibility: true
       });
 
-      console.log('[Auth] Signup response:', authData);
+      console.log('[Auth] User created successfully:', authData);
 
       // Authenticate the user immediately after creation
+      console.log('[Auth] Authenticating user...');
       const authResponse = await pb.collection('users').authWithPassword(email, password);
       const authUser = authResponse.record as unknown as User;
 
@@ -101,24 +104,51 @@ export function AuthProvider({ children }: AuthProviderProps) {
       // Create profile record - now that user is authenticated
       console.log('[Auth] Creating profile for authenticated user:', authUser.id);
       try {
-        await pb.collection('profiles').create({
+        const profileData = await pb.collection('profiles').create({
           user: authUser.id,
           company_name: '',
           brand_color: '#6366f1',
           logo_url: ''
         });
-        console.log('[Auth] Profile created successfully');
+        console.log('[Auth] Profile created successfully:', profileData);
       } catch (profileErr) {
         console.error('[Auth] Failed to create profile:', profileErr);
+        console.error('[Auth] Profile error details:', JSON.stringify(profileErr, null, 2));
         // Don't fail signup if profile creation fails - user can still use the app
       }
 
       setSession(authResponse as unknown as RecordAuthResponse<User>);
       setUser(authUser);
-      console.log('[Auth] Signup successful');
+      console.log('[Auth] Signup completed successfully');
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Signup failed';
-      console.error('[Auth] Signup exception:', err);
+      console.error('[Auth] Signup failed with error:', err);
+      console.error('[Auth] Error details:', JSON.stringify(err, null, 2));
+      
+      let errorMessage = 'Signup failed';
+      
+      // Handle PocketBase specific errors
+      if (err && typeof err === 'object' && 'data' in err) {
+        const pbError = err as any;
+        if (pbError.data?.message) {
+          errorMessage = pbError.data.message;
+        } else if (pbError.message) {
+          errorMessage = pbError.message;
+        }
+        
+        // Handle validation errors
+        if (pbError.data?.data) {
+          const fieldErrors = Object.entries(pbError.data.data).map(([field, error]) => 
+            `${field}: ${error}`
+          ).join(', ');
+          if (fieldErrors) {
+            errorMessage = `Validation error: ${fieldErrors}`;
+          }
+        }
+      } else if (err instanceof Error) {
+        errorMessage = err.message;
+      }
+      
+      console.error('[Auth] Final error message:', errorMessage);
       setError(errorMessage);
       throw new Error(errorMessage);
     } finally {
@@ -132,18 +162,35 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
     try {
       console.log('[Auth] Starting login for:', email);
+      console.log('[Auth] PocketBase URL:', pb.baseUrl);
       
       const authResponse = await pb.collection('users').authWithPassword(email, password);
 
-      console.log('[Auth] Login response:', authResponse);
+      console.log('[Auth] Login successful:', authResponse);
 
       const authUser = authResponse.record as unknown as User;
       setSession(authResponse as unknown as RecordAuthResponse<User>);
       setUser(authUser);
-      console.log('[Auth] Login successful');
+      console.log('[Auth] Login completed successfully');
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Login failed';
-      console.error('[Auth] Login exception:', err);
+      console.error('[Auth] Login failed with error:', err);
+      console.error('[Auth] Error details:', JSON.stringify(err, null, 2));
+      
+      let errorMessage = 'Login failed';
+      
+      // Handle PocketBase specific errors
+      if (err && typeof err === 'object' && 'data' in err) {
+        const pbError = err as any;
+        if (pbError.data?.message) {
+          errorMessage = pbError.data.message;
+        } else if (pbError.message) {
+          errorMessage = pbError.message;
+        }
+      } else if (err instanceof Error) {
+        errorMessage = err.message;
+      }
+      
+      console.error('[Auth] Final error message:', errorMessage);
       setError(errorMessage);
       throw new Error(errorMessage);
     } finally {
